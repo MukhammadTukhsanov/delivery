@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yolda/pages/onboarding/onboarding.dart';
+import 'package:yolda/pages/registration/registrarion.dart';
 import 'package:yolda/pages/splash-screen/splash.dart';
 
 class Routs extends StatelessWidget {
@@ -8,8 +9,9 @@ class Routs extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/': (context) => Splash(),
-        '/onboarding': (context) => OnboardingPage()
+        '/': (context) => const Splash(),
+        '/onboarding': (context) => const OnboardingPage(),
+        '/registration': (context) => const Registration()
       },
     );
   }

@@ -6,19 +6,19 @@ class Splash extends StatefulWidget {
   const Splash({super.key});
 
   @override
-  _OnboardingState createState() => _OnboardingState();
+  OnboardingState createState() => OnboardingState();
 }
 
-class _OnboardingState extends State<Splash> {
+class OnboardingState extends State<Splash> {
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) => OnboardingPage()),
+                builder: (BuildContext context) => const OnboardingPage()),
             ModalRoute.withName('onboarding/'));
       });
     });
