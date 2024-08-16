@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yolda/pages/onboarding/content_model.dart';
-import 'package:yolda/pages/registration/registrarion.dart';
+import 'package:yolda/pages/registration/login.dart';
 import 'package:yolda/widgets/button/button.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -86,8 +86,7 @@ class OnboardingPageState extends State<OnboardingPage> {
   void scipToRegisterPage() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => const Registration()),
+        MaterialPageRoute(builder: (BuildContext context) => const Login()),
         ModalRoute.withName('registration/'));
   }
 

@@ -5,13 +5,16 @@ class Input extends StatefulWidget {
   final String? placeholder;
   final String inputType;
   final String? Function(String?)? validator;
+  final bool? enabled;
+  final TextEditingController? controller;
 
-  const Input({
-    super.key,
-    this.placeholder = 'placeholder',
-    required this.inputType,
-    this.validator,
-  });
+  const Input(
+      {super.key,
+      this.placeholder = 'placeholder',
+      required this.inputType,
+      this.validator,
+      this.enabled = true,
+      this.controller});
 
   @override
   State<Input> createState() => _InputState();
@@ -30,6 +33,10 @@ class _InputState extends State<Input> {
       inputTypeIs = textFieldForPhoneNumber;
     } else if (widget.inputType == 'password') {
       inputTypeIs = textFieldForPassword;
+    } else if (widget.inputType == 'name') {
+      inputTypeIs = textFieldForUserName;
+    } else if (widget.inputType == 'default') {
+      inputTypeIs = textFieldDefault;
     } else {
       inputTypeIs = [];
     }
@@ -47,11 +54,12 @@ class _InputState extends State<Input> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: SizedBox(
-            height: 86,
+            height: 76,
             child: TextFormField(
+              controller: widget.controller,
               decoration: InputDecoration(
                 filled: true,
-                labelText: e.placeholder ?? widget.placeholder,
+                labelText: widget.placeholder,
                 labelStyle: TextStyle(
                   color: const Color(0xff3c4860).withOpacity(.7),
                   fontFamily: "Josefin Sans",
@@ -86,6 +94,7 @@ class _InputState extends State<Input> {
               obscureText:
                   widget.inputType == 'password' ? _passwordVisible : false,
               validator: e.validator,
+              enabled: widget.enabled!,
             ),
           ),
         );
