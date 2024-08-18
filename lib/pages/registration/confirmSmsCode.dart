@@ -14,6 +14,25 @@ class ConfirmSmsCode extends StatefulWidget {
 
 class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
   final GlobalKey<FormState> _registerKey = GlobalKey<FormState>();
+  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+  final List<TextEditingController> _smsCodeControllers =
+      List.generate(4, (_) => TextEditingController());
+  @override
+  void dispose() {
+    _focusNodes.forEach((node) => node.dispose());
+    _smsCodeControllers.forEach((controller) => controller.dispose());
+    super.dispose();
+  }
+
+  void _onFieldChanged(String value, int index) {
+    if (value.length == 1) {
+      if (index < 3) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +87,19 @@ class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              ...e.codeInputs!.map((input) {
+                              ...e.codeInputs!.asMap().entries.map((entry) {
+                                int index = entry.key;
+                                var input = entry.value;
                                 return SizedBox(
                                   width: 80,
                                   child: Input(
                                     placeholder: '',
+                                    maxLength: 1,
+                                    textAlign: TextAlign.center,
                                     inputType: input['type'],
+                                    focusNode: _focusNodes[index],
+                                    onChanged: (value) =>
+                                        _onFieldChanged(value!, index),
                                   ),
                                 );
                               }),

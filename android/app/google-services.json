@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "569284477850",
+    "project_id": "yo-lda-a732c",
+    "storage_bucket": "yo-lda-a732c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569284477850:android:b225be5494f6f1c60e7023",
+        "android_client_info": {
+          "package_name": "com.example.yolda"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvNC-An2SXHYbsG_lr7RgNhQBLwhVFYP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
