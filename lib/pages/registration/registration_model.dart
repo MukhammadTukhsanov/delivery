@@ -44,10 +44,27 @@ List<RegistrationModel> registerPage = [
     subtitle: 'Iltimos Telefon raqam va Parolingizni kiriting',
     buttonType: 'filled',
     inputs: [
-      {'type': 'name', 'text': 'Ism va Familya'},
-      {'type': 'phone', 'text': 'Telefon raqam'},
-      {'type': 'password', 'text': 'Paroll kiriting'},
-      {'type': 'password', 'text': 'Parollni tasdiqlang'},
+      {'type': 'name', 'text': 'Ism', 'controller': TextEditingController()},
+      {
+        'type': 'surname',
+        'text': 'Familya',
+        'controller': TextEditingController()
+      },
+      {
+        'type': 'phone',
+        'text': 'Telefon raqam',
+        'controller': TextEditingController()
+      },
+      {
+        'type': 'password',
+        'text': 'Paroll kiriting',
+        'controller': TextEditingController()
+      },
+      {
+        'type': 'password',
+        'text': 'Parollni tasdiqlang',
+        'controller': TextEditingController()
+      },
     ],
     // textWithLink: 'Parollni unuttingizmi?',
     textAndLinkedText: {'text': "Akkountingiz bormi?", 'linkedText': "Kirish"},
