@@ -15,7 +15,7 @@ class _RegistrationState extends State<Registration> {
   final GlobalKey<FormState> _registerKey = GlobalKey<FormState>();
 
   final List<TextEditingController> registerControllers =
-      List.generate(4, (_) => TextEditingController());
+      List.generate(5, (_) => TextEditingController());
 
   void dispose() {
     registerControllers.forEach((controller) => controller.dispose());

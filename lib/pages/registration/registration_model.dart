@@ -46,7 +46,7 @@ List<RegistrationModel> registerPage = [
     inputs: [
       {'type': 'name', 'text': 'Ism', 'controller': TextEditingController()},
       {
-        'type': 'surname',
+        'type': 'name',
         'text': 'Familya',
         'controller': TextEditingController()
       },
@@ -61,7 +61,7 @@ List<RegistrationModel> registerPage = [
         'controller': TextEditingController()
       },
       {
-        'type': 'password',
+        'type': 'confirmPassword',
         'text': 'Parollni tasdiqlang',
         'controller': TextEditingController()
       },

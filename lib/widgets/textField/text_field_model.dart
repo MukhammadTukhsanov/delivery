@@ -1,77 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:yolda/global/global.dart';
+
+String? originalPassword;
 
 class TextfieldModel {
-  String type;
-  String? prefixIcon;
-  String? suffixIcon;
-  String? changedSuffixIcon;
-  String? Function(String?)? validator;
-  TextInputType keyboardType;
+  final String type;
+  final String? prefixIcon;
+  final String? suffixIcon;
+  final String? changedSuffixIcon;
+  final String? Function(String?)? validator;
+  final TextInputType keyboardType;
 
-  TextfieldModel(
-      {required this.type,
-      this.prefixIcon,
-      this.suffixIcon,
-      this.changedSuffixIcon,
-      this.validator,
-      required this.keyboardType});
+  TextfieldModel({
+    required this.type,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.changedSuffixIcon,
+    this.validator,
+    required this.keyboardType,
+  });
 }
 
-List<TextfieldModel> textFieldDefault = [
+// Default TextField
+final List<TextfieldModel> textFieldDefault = [
   TextfieldModel(
-      type: 'default',
-      // prefixIcon: 'assets/img/person.png',
-      // validator: (value) {
-      //   if (value == null || value.isEmpty) {
-      //     return 'Please enter some text';
-      //   } else if (value.length < 6) {
-      //     return 'Please enter at least 6 characters';
-      //   }
-      //   return null;
-      // },
-      keyboardType: TextInputType.name)
+    type: 'default',
+    keyboardType: TextInputType.name,
+  ),
 ];
-List<TextfieldModel> textFieldForUserName = [
+
+// UserName TextField
+final List<TextfieldModel> textFieldForUserName = [
   TextfieldModel(
-      type: 'name',
-      prefixIcon: 'assets/img/person.png',
-      // validator: (value) {
-      //   if (value == null || value.isEmpty) {
-      //     return 'Please enter some text';
-      //   } else if (value.length < 6) {
-      //     return 'Please enter at least 6 characters';
-      //   }
-      //   return null;
-      // },
-      keyboardType: TextInputType.name)
+    type: 'name',
+    prefixIcon: 'assets/img/person.png',
+    keyboardType: TextInputType.name,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Iltimos yozuv kiriting';
+      } else if (value.length < 2) {
+        return 'Iltimos 2 dan ortiq harf kiriting.';
+      }
+      return null;
+    },
+  ),
 ];
-List<TextfieldModel> textFieldForPhoneNumber = [
+
+// PhoneNumber TextField
+final List<TextfieldModel> textFieldForPhoneNumber = [
   TextfieldModel(
-      type: 'phone',
-      prefixIcon: 'assets/img/phone.png',
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter some text';
-        } else if (value.length < 6) {
-          return 'Please enter at least 6 characters';
-        }
-        return null;
-      },
-      keyboardType: TextInputType.phone)
+    type: 'phone',
+    prefixIcon: 'assets/img/phone.png',
+    keyboardType: TextInputType.phone,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Iltimos telefon raqam kiriting';
+      } else if (!RegExp(r'^\+998\d{9}$').hasMatch(value)) {
+        return "Iltimos to'g'ri formatda kiriting.";
+      }
+      return null;
+    },
+  ),
 ];
-List<TextfieldModel> textFieldForPassword = [
+
+// Password TextField
+final List<TextfieldModel> textFieldForPassword = [
   TextfieldModel(
-      type: 'password',
-      prefixIcon: 'assets/img/lock.png',
-      suffixIcon: 'assets/img/eye-open.png',
-      changedSuffixIcon: 'assets/img/eye-closed.png',
-      keyboardType: TextInputType.text)
+    type: 'password',
+    prefixIcon: 'assets/img/lock.png',
+    suffixIcon: 'assets/img/eye-open.png',
+    changedSuffixIcon: 'assets/img/eye-closed.png',
+    keyboardType: TextInputType.text,
+    validator: (value) {
+      originalPassword = value;
+      if (value == null || value.isEmpty) {
+        return 'Iltimos yozuv kiriting';
+      } else if (value.length < 6) {
+        return 'Iltimos 6 dan ortiq harf kiriting.';
+      }
+      return null;
+    },
+  ),
 ];
-List<TextfieldModel> textFieldForConfirmPassword = [
+
+// Confirm Password TextField
+final List<TextfieldModel> textFieldForConfirmPassword = [
   TextfieldModel(
-      type: 'password',
-      prefixIcon: 'assets/img/lock.png',
-      suffixIcon: 'assets/img/eye-open.png',
-      changedSuffixIcon: 'assets/img/eye-closed.png',
-      keyboardType: TextInputType.phone)
+    type: 'confirmPassword',
+    prefixIcon: 'assets/img/lock.png',
+    suffixIcon: 'assets/img/eye-open.png',
+    changedSuffixIcon: 'assets/img/eye-closed.png',
+    keyboardType: TextInputType.text,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Iltimos yozuv kiriting';
+      } else if (value != originalPassword) {
+        return 'Parollar mos kelmadi';
+      }
+      return null;
+    },
+  ),
 ];

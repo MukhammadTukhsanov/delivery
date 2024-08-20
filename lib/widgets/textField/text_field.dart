@@ -42,6 +42,8 @@ class _InputState extends State<Input> {
       inputTypeIs = textFieldForPhoneNumber;
     } else if (widget.inputType == 'password') {
       inputTypeIs = textFieldForPassword;
+    } else if (widget.inputType == 'confirmPassword') {
+      inputTypeIs = textFieldForConfirmPassword;
     } else if (widget.inputType == 'name') {
       inputTypeIs = textFieldForUserName;
     } else if (widget.inputType == 'default') {
