@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:yolda/global/global.dart';
 
 String? originalPassword;
 

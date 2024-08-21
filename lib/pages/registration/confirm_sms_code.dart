@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:yolda/pages/registration/confirmSmsCode.dart';
 import 'package:yolda/pages/registration/new_password.dart';
 import 'package:yolda/pages/registration/registration.dart';
 import 'package:yolda/pages/registration/registration_model.dart';
 import 'package:yolda/widgets/button/button.dart';
 import 'package:yolda/widgets/textField/text_field.dart';
 
-class SendSms extends StatefulWidget {
-  const SendSms({super.key});
+class ConfirmSmsCode extends StatefulWidget {
+  const ConfirmSmsCode({super.key});
 
   @override
-  State<SendSms> createState() => _SendSmsState();
+  State<ConfirmSmsCode> createState() => _ConfirmSmsCodeState();
 }
 
-class _SendSmsState extends State<SendSms> {
+class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
   final GlobalKey<FormState> _registerKey = GlobalKey<FormState>();
+  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+  final List<TextEditingController> _smsCodeControllers =
+      List.generate(4, (_) => TextEditingController());
+  @override
+  void dispose() {
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    for (var controller in _smsCodeControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onFieldChanged(String value, int index) {
+    if (value.length == 1) {
+      if (index < 3) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +56,7 @@ class _SendSmsState extends State<SendSms> {
               child: ListView(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(16.0),
-                children: sendSmsPage.map((e) {
+                children: confirmSmsCodePage.map((e) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Column(
@@ -59,8 +81,34 @@ class _SendSmsState extends State<SendSms> {
                           return Input(
                             inputType: input['type'],
                             placeholder: input['text'],
+                            enabled: input['enabled'],
                           );
                         }),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (e.codeInputs != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ...e.codeInputs!.asMap().entries.map((entry) {
+                                int index = entry.key;
+                                var input = entry.value;
+                                return SizedBox(
+                                  width: 80,
+                                  child: Input(
+                                    placeholder: '',
+                                    maxLength: 1,
+                                    textAlign: TextAlign.center,
+                                    inputType: input['type'],
+                                    focusNode: _focusNodes[index],
+                                    onChanged: (value) =>
+                                        _onFieldChanged(value!, index),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
                         if (e.textWithLink != null)
                           Transform.translate(
                             offset: Offset(screenSize.width / 2 - 125, -18),
@@ -93,11 +141,12 @@ class _SendSmsState extends State<SendSms> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ConfirmSmsCode()));
+                                      builder: (context) =>
+                                          const NewPassword()));
                             }
                           },
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -118,7 +167,8 @@ class _SendSmsState extends State<SendSms> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Registration()));
+                                        builder: (context) =>
+                                            const Registration()));
                               },
                               child: Text(
                                 e.textAndLinkedText!['linkedText'],

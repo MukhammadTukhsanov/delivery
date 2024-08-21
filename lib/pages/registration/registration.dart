@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yolda/controllers/auth_service.dart';
 import 'package:yolda/pages/registration/login.dart';
 import 'package:yolda/pages/registration/registration_model.dart';
 import 'package:yolda/widgets/button/button.dart';
@@ -14,11 +15,14 @@ class Registration extends StatefulWidget {
 class _RegistrationState extends State<Registration> {
   final GlobalKey<FormState> _registerKey = GlobalKey<FormState>();
 
-  final List<TextEditingController> registerControllers =
+  final List<TextEditingController> _registerControllers =
       List.generate(5, (_) => TextEditingController());
 
+  @override
   void dispose() {
-    registerControllers.forEach((controller) => controller.dispose());
+    for (var controller in _registerControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -61,10 +65,13 @@ class _RegistrationState extends State<Registration> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        ...e.inputs.map((input) {
+                        ...e.inputs.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var input = entry.value;
                           return Input(
                             inputType: input['type'],
                             placeholder: input['text'],
+                            controller: _registerControllers[index],
                           );
                         }),
                         if (e.textWithLink != null)
@@ -96,6 +103,11 @@ class _RegistrationState extends State<Registration> {
                                 const SnackBar(
                                     content: Text('Processing Data')),
                               );
+                              AuthService.registerUser(
+                                  username: _registerControllers[0].text,
+                                  surname: _registerControllers[1].text,
+                                  phoneNumber: _registerControllers[2].text,
+                                  password: _registerControllers[3].text);
                             }
                           },
                         ),

@@ -8,93 +8,110 @@ class AuthService {
 
   static String verifyId = "";
 
-  static Future registerUser(
-      {required phoneNumber,
-      required username,
-      required surname,
-      required password}) async {
-    // create user with emmail and password
-    await _firebaseAuth.createUserWithEmailAndPassword(
-        email: phoneNumber + "@example.com", password: password);
-
-    //  Store user data in Firestore
-
-    await _firebaseFirestore.collection('users').doc(phoneNumber).set({
-      'username': username,
-      'surname': surname,
-      'password': password,
-      'phoneNumber': phoneNumber
-    });
-  }
-
-  static Future loginUser({required phoneNumber, required password}) async {
+  static Future<void> registerUser({
+    required String username,
+    required String surname,
+    required String phoneNumber,
+    required String password,
+  }) async {
     try {
-      DocumentSnapshot userDoc =
-          await _firebaseFirestore.collection('users').doc(phoneNumber).get();
+      // Create user with email and password
+      await _firebaseAuth.createUserWithEmailAndPassword(
+        email: "$phoneNumber@example.com",
+        password: password,
+      );
 
-      if (userDoc.exists) {
-        if (userDoc['password'] == password) {
-          await _firebaseAuth.signInWithEmailAndPassword(
-              email: phoneNumber + '@example.com', password: password);
-        }
-      }
+      // Store user data in Firestore
+      await _firebaseFirestore.collection('users').doc(phoneNumber).set({
+        'username': username,
+        'surname': surname,
+        'phoneNumber': phoneNumber,
+      });
     } catch (e) {
-      print(e);
+      print("Error registering user: $e");
+      rethrow; // Optional: rethrow if you want to handle it elsewhere
     }
   }
 
-  static Future sendOtp(
-      {required String phone,
-      required Function errorStep,
-      required Function nextStep}) async {
-    await _firebaseAuth
-        .verifyPhoneNumber(
-            timeout: const Duration(seconds: 30),
-            phoneNumber: phone,
-            verificationCompleted: (phoneAuthCredential) async {
-              return;
-            },
-            verificationFailed: (error) async {
-              return;
-            },
-            codeSent: (verificationId, forceResendingToken) async {
-              verifyId = verificationId;
-              nextStep();
-            },
-            codeAutoRetrievalTimeout: (verificationId) async {
-              return;
-            })
-        .onError((error, stackTrace) {
-      errorStep();
-    });
+  static Future<void> loginUser({
+    required String phoneNumber,
+    required String password,
+  }) async {
+    try {
+      // Attempt to log in with email and password using Firebase Authentication
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: '$phoneNumber@example.com',
+        password: password,
+      );
+      print("User logged in successfully: ${userCredential.user?.uid}");
+    } on FirebaseAuthException catch (e) {
+      // Throw detailed exceptions based on FirebaseAuthException
+      throw AuthException(e.code, e.message!);
+    } catch (e) {
+      // Handle other exceptions
+      throw AuthException('unknown-error', 'An unknown error occurred.');
+    }
   }
 
-  // verify the otp code and login
-
-  static Future loginWithOtp({required String otp}) async {
-    final cred =
-        PhoneAuthProvider.credential(verificationId: verifyId, smsCode: otp);
+  static Future<void> sendOtp({
+    required String phone,
+    required Function errorStep,
+    required Function nextStep,
+  }) async {
     try {
-      final user = await _firebaseAuth.signInWithCredential(cred);
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phone,
+        timeout: const Duration(seconds: 30),
+        verificationCompleted: (phoneAuthCredential) async {},
+        verificationFailed: (FirebaseAuthException error) async {
+          errorStep();
+        },
+        codeSent: (String verificationId, int? forceResendingToken) async {
+          verifyId = verificationId;
+          nextStep();
+        },
+        codeAutoRetrievalTimeout: (String verificationId) async {},
+      );
+    } catch (e) {
+      print("Error sending OTP: $e");
+      errorStep();
+    }
+  }
+
+  static Future<String> loginWithOtp({required String otp}) async {
+    try {
+      final PhoneAuthCredential cred =
+          PhoneAuthProvider.credential(verificationId: verifyId, smsCode: otp);
+      final UserCredential user =
+          await _firebaseAuth.signInWithCredential(cred);
       if (user.user != null) {
         return "Success!";
       } else {
-        return "Error in Otp login";
+        return "Error in OTP login";
       }
     } on FirebaseAuthException catch (e) {
-      return e.message.toString();
+      return e.message ?? "Unknown error";
     } catch (e) {
-      return e.toString();
+      return "Error: $e";
     }
   }
 
-  // to logout the user
-  static Future logout() async {
+  static Future<void> logout() async {
     await _firebaseAuth.signOut();
   }
 
   static Future<bool> isLoggedIn() async {
-    var user = _firebaseAuth.currentUser;
-    return user != null;
+    return _firebaseAuth.currentUser != null;
   }
+}
+
+class AuthException implements Exception {
+  final String code;
+  final String message;
+
+  AuthException(this.code, this.message);
+
+  @override
+  String toString() => 'AuthException(code: $code, message: $message)';
 }

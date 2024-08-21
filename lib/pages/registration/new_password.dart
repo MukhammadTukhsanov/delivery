@@ -91,7 +91,7 @@ class _NewPasswordState extends State<NewPassword> {
                             }
                           },
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -112,7 +112,8 @@ class _NewPasswordState extends State<NewPassword> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Registration()));
+                                        builder: (context) =>
+                                            const Registration()));
                               },
                               child: Text(
                                 e.textAndLinkedText!['linkedText'],

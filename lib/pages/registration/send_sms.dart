@@ -1,37 +1,31 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:yolda/pages/registration/new_password.dart';
+import 'package:yolda/controllers/auth_service.dart';
+import 'package:yolda/pages/registration/confirm_sms_code.dart';
 import 'package:yolda/pages/registration/registration.dart';
 import 'package:yolda/pages/registration/registration_model.dart';
 import 'package:yolda/widgets/button/button.dart';
 import 'package:yolda/widgets/textField/text_field.dart';
 
-class ConfirmSmsCode extends StatefulWidget {
-  const ConfirmSmsCode({super.key});
+class SendSms extends StatefulWidget {
+  const SendSms({super.key});
 
   @override
-  State<ConfirmSmsCode> createState() => _ConfirmSmsCodeState();
+  State<SendSms> createState() => _SendSmsState();
 }
 
-class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
+class _SendSmsState extends State<SendSms> {
   final GlobalKey<FormState> _registerKey = GlobalKey<FormState>();
-  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
-  final List<TextEditingController> _smsCodeControllers =
-      List.generate(4, (_) => TextEditingController());
+  final List<TextEditingController> _phoneNumberController =
+      List.generate(1, (_) => TextEditingController());
+
   @override
   void dispose() {
-    _focusNodes.forEach((node) => node.dispose());
-    _smsCodeControllers.forEach((controller) => controller.dispose());
-    super.dispose();
-  }
-
-  void _onFieldChanged(String value, int index) {
-    if (value.length == 1) {
-      if (index < 3) {
-        _focusNodes[index + 1].requestFocus();
-      } else {
-        _focusNodes[index].unfocus();
-      }
+    for (var _ in _phoneNumberController) {
+      _.dispose();
     }
+    super.dispose();
   }
 
   @override
@@ -52,7 +46,7 @@ class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
               child: ListView(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(16.0),
-                children: confirmSmsCodePage.map((e) {
+                children: sendSmsPage.map((e) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Column(
@@ -73,38 +67,15 @@ class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        ...e.inputs.map((input) {
+                        ...e.inputs.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var input = entry.value;
                           return Input(
                             inputType: input['type'],
                             placeholder: input['text'],
-                            enabled: input['enabled'],
+                            controller: _phoneNumberController[index],
                           );
                         }),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        if (e.codeInputs != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ...e.codeInputs!.asMap().entries.map((entry) {
-                                int index = entry.key;
-                                var input = entry.value;
-                                return SizedBox(
-                                  width: 80,
-                                  child: Input(
-                                    placeholder: '',
-                                    maxLength: 1,
-                                    textAlign: TextAlign.center,
-                                    inputType: input['type'],
-                                    focusNode: _focusNodes[index],
-                                    onChanged: (value) =>
-                                        _onFieldChanged(value!, index),
-                                  ),
-                                );
-                              }),
-                            ],
-                          ),
                         if (e.textWithLink != null)
                           Transform.translate(
                             offset: Offset(screenSize.width / 2 - 125, -18),
@@ -125,23 +96,33 @@ class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
                         Button(
                           type: e.buttonType,
                           text: e.buttonText,
-                          onPressed: () {
+                          onPressed: () async {
+                            print(_phoneNumberController[0].text);
                             // Validate returns true if the form is valid, or false otherwise.
                             if (_registerKey.currentState!.validate()) {
+                              await FirebaseAuth.instance.verifyPhoneNumber(
+                                  phoneNumber: _phoneNumberController[0].text,
+                                  verificationCompleted:
+                                      (phoneAuthCredential) {},
+                                  verificationFailed: (err) {
+                                    print('error: $err');
+                                  },
+                                  codeSent:
+                                      (verificationId, forceResendingToken) {
+                                    print(verificationId);
+                                  },
+                                  codeAutoRetrievalTimeout:
+                                      (verificationId) {});
                               // If the form is valid, display a snackbar. In the real world,
                               // you'd often call a server or save the information in a database.
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content: Text('Processing Data')),
                               );
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => NewPassword()));
                             }
                           },
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -162,7 +143,8 @@ class _ConfirmSmsCodeState extends State<ConfirmSmsCode> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Registration()));
+                                        builder: (context) =>
+                                            const Registration()));
                               },
                               child: Text(
                                 e.textAndLinkedText!['linkedText'],
