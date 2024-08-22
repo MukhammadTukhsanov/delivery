@@ -56,30 +56,27 @@ class AuthService {
 
   static Future<void> sendOtp({
     required String phone,
-    required Function errorStep,
-    required Function nextStep,
+    // required Function errorStep,
+    required Function(String) onCodeSent,
+    // required Function nextStep,
   }) async {
     try {
       await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phone,
-        timeout: const Duration(seconds: 30),
-        verificationCompleted: (phoneAuthCredential) async {},
-        verificationFailed: (FirebaseAuthException error) async {
-          errorStep();
-        },
+        timeout: const Duration(seconds: 40),
+        verificationCompleted: (credential) async {},
+        verificationFailed: (e) async {},
         codeSent: (String verificationId, int? forceResendingToken) async {
-          verifyId = verificationId;
-          nextStep();
+          onCodeSent(verificationId);
         },
         codeAutoRetrievalTimeout: (String verificationId) async {},
       );
     } catch (e) {
       print("Error sending OTP: $e");
-      errorStep();
     }
   }
 
-  static Future<String> loginWithOtp({required String otp}) async {
+  static Future<String> verifyOTPCode({required String otp}) async {
     try {
       final PhoneAuthCredential cred =
           PhoneAuthProvider.credential(verificationId: verifyId, smsCode: otp);

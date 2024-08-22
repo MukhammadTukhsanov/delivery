@@ -17,8 +17,13 @@ class SendSms extends StatefulWidget {
 
 class _SendSmsState extends State<SendSms> {
   final GlobalKey<FormState> _registerKey = GlobalKey<FormState>();
+  String _verificationId = "";
   final List<TextEditingController> _phoneNumberController =
       List.generate(1, (_) => TextEditingController());
+
+  sendOTP() {
+    // AuthService.sendOtp(phone: _phoneNumberController[0].text, onCodeSent: )
+  }
 
   @override
   void dispose() {
@@ -96,31 +101,7 @@ class _SendSmsState extends State<SendSms> {
                         Button(
                           type: e.buttonType,
                           text: e.buttonText,
-                          onPressed: () async {
-                            print(_phoneNumberController[0].text);
-                            // Validate returns true if the form is valid, or false otherwise.
-                            if (_registerKey.currentState!.validate()) {
-                              await FirebaseAuth.instance.verifyPhoneNumber(
-                                  phoneNumber: _phoneNumberController[0].text,
-                                  verificationCompleted:
-                                      (phoneAuthCredential) {},
-                                  verificationFailed: (err) {
-                                    print('error: $err');
-                                  },
-                                  codeSent:
-                                      (verificationId, forceResendingToken) {
-                                    print(verificationId);
-                                  },
-                                  codeAutoRetrievalTimeout:
-                                      (verificationId) {});
-                              // If the form is valid, display a snackbar. In the real world,
-                              // you'd often call a server or save the information in a database.
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Processing Data')),
-                              );
-                            }
-                          },
+                          onPressed: _sendOTP,
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -168,6 +149,32 @@ class _SendSmsState extends State<SendSms> {
           ),
         ),
       ),
+    );
+  }
+
+  void _sendOTP() async {
+    String phoneNumber = _phoneNumberController[0].text.trim();
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      timeout: Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // Auto-resolve or auto-sign-in if the OTP is automatically detected
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print("Verification failed: ${e.message}");
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+        print("Verification code sent to $phoneNumber");
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+      },
     );
   }
 }
