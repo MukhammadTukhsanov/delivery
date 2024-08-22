@@ -11,19 +11,22 @@ class Input extends StatefulWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final void Function(String?)? onChanged;
+  final Color? fillColor;
+  final IconData? prefixIcon;
 
-  const Input({
-    super.key,
-    this.placeholder = 'placeholder',
-    required this.inputType,
-    this.validator,
-    this.enabled = true,
-    this.textAlign,
-    this.maxLength,
-    this.controller,
-    this.focusNode,
-    this.onChanged,
-  });
+  const Input(
+      {super.key,
+      this.placeholder = 'placeholder',
+      required this.inputType,
+      this.validator,
+      this.enabled = true,
+      this.textAlign,
+      this.maxLength,
+      this.controller,
+      this.focusNode,
+      this.onChanged,
+      this.fillColor,
+      this.prefixIcon});
 
   @override
   State<Input> createState() => _InputState();
@@ -38,7 +41,9 @@ class _InputState extends State<Input> {
     super.initState();
 
     // Initialize the inputTypeIs based on inputType
-    if (widget.inputType == 'phone') {
+    if (widget.inputType == 'search') {
+      inputTypeIs = textFieldForSearch;
+    } else if (widget.inputType == 'phone') {
       inputTypeIs = textFieldForPhoneNumber;
     } else if (widget.inputType == 'password') {
       inputTypeIs = textFieldForPassword;
@@ -76,7 +81,7 @@ class _InputState extends State<Input> {
                     fontFamily: "Josefin Sans",
                     fontSize: 20,
                   ),
-                  prefixIcon: e.prefixIcon != null && e.prefixIcon!.isNotEmpty
+                  prefixIcon: (e.prefixIcon != null && e.prefixIcon!.isNotEmpty)
                       ? Image.asset(e.prefixIcon!)
                       : null,
                   suffixIcon: e.suffixIcon != null && e.suffixIcon!.isNotEmpty
@@ -87,7 +92,8 @@ class _InputState extends State<Input> {
                               : Image.asset(e.changedSuffixIcon!),
                         )
                       : null,
-                  fillColor: const Color(0xff4c486b).withOpacity(.1),
+                  fillColor: widget.fillColor ??
+                      const Color(0xff4c486b).withOpacity(.1),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6),
                     borderSide: BorderSide(

@@ -45,6 +45,15 @@ final List<TextfieldModel> textFieldForUserName = [
   ),
 ];
 
+// Search TextField
+final List<TextfieldModel> textFieldForSearch = [
+  TextfieldModel(
+    type: 'default',
+    prefixIcon: 'assets/img/search-icon.png',
+    keyboardType: TextInputType.text,
+  ),
+];
+
 // PhoneNumber TextField
 final List<TextfieldModel> textFieldForPhoneNumber = [
   TextfieldModel(
