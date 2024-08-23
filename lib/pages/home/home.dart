@@ -3,6 +3,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
 import 'package:yolda/controllers/location_helper.dart';
 import 'package:yolda/controllers/user_location.dart';
+import 'package:yolda/pages/home/header_location.dart';
+import 'package:yolda/pages/home/header_menu.dart';
+import 'package:yolda/pages/home/item_card.dart';
+import 'package:yolda/pages/home/list_title.dart';
 import 'package:yolda/widgets/textField/text_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,13 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
-
-  List headerMenu = [
-    {'text': 'Chegirmalar', 'img': 'assets/img/discount.png'},
-    {'text': 'Chegirmalar', 'img': 'assets/img/discount.png'},
-    {'text': 'Chegirmalar', 'img': 'assets/img/discount.png'},
-    {'text': 'Chegirmalar', 'img': 'assets/img/discount.png'}
-  ];
 
   @override
   void initState() {
@@ -48,47 +45,7 @@ class _HomePageState extends State<HomePage> {
               )
             : Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 6),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Transform.translate(
-                              offset: const Offset(0, 2),
-                              child: Text(
-                                "${UserLocation.city}, ${UserLocation.street}",
-                                style: const TextStyle(
-                                  fontFamily: 'Josefin Sans',
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                            Transform.translate(
-                              offset: const Offset(0, -2),
-                              child: Text(
-                                UserLocation.region,
-                                style: const TextStyle(
-                                  fontFamily: 'Josefin Sans',
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  const HeaderLocation(),
                   const SizedBox(height: 16),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -106,15 +63,34 @@ class _HomePageState extends State<HomePage> {
                           topRight: Radius.circular(30)),
                       color: Colors.white,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [],
-                          )
-                        ],
-                      ),
+                    child: Column(
+                      children: [
+                        const HeaderMenu(),
+                        const Divider(),
+                        ListTitle(
+                          text: "Oldingi buyurtmalaringiz",
+                          onTap: () {},
+                        ),
+                        const SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 16.0, top: 6),
+                            child: Row(
+                              children: [
+                                ItemCard(),
+                                ItemCard(),
+                                ItemCard(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Divider(),
+                        ListTitle(
+                          text: "Oshxonalar",
+                        ),
+                        const SizedBox(height: 20)
+                      ],
                     ),
                   )
                 ],
