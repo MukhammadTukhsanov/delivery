@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yolda/controllers/gets.dart';
+import 'package:yolda/pages/home/home.dart';
 
 class AuthService {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -100,6 +104,18 @@ class AuthService {
 
   static Future<bool> isLoggedIn() async {
     return _firebaseAuth.currentUser != null;
+  }
+
+  static Future<void> onLoginSuccess(BuildContext context, String user) async {
+    // Example user ID (usually you would get this from your login logic)
+    String userId = user;
+
+    // Get and store the order data
+    await Gets.getAndStoreOrderData(userId);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Login Successful')),
+    );
   }
 }
 

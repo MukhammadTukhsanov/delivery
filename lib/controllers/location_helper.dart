@@ -50,9 +50,6 @@ Future<void> getUserLocation() async {
       longitude,
     ).timeout(const Duration(seconds: 20));
 
-    print(placemarks[0]);
-    print("Latitude: $latitude, Longitude: $longitude");
-
     UserLocation.lat = latitude;
     UserLocation.long = longitude;
     UserLocation.country = placemarks[0].country ?? '';

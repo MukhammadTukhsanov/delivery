@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Gets {
   static final FirebaseFirestore _firebaseFirestore =
@@ -35,12 +36,57 @@ class Gets {
 
         kitchensData.add(data);
       }
-
-      print("kitchensData: $kitchensData");
       return kitchensData;
     } catch (e) {
       print('Error fetching kitchens: $e');
       return [];
+    }
+  }
+
+  static Future<void> getAndStoreOrderData(String userId) async {
+    try {
+      // Reference to Firestore collection
+      final orderCollection = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('orders');
+
+      // Retrieve the data
+      DocumentSnapshot<Map<String, dynamic>> orderSnapshot =
+          await orderCollection.doc('orders').get();
+      if (orderSnapshot.exists) {
+        List<String> ordersData = orderSnapshot.data()!.entries.map((entry) {
+          return '${entry.value}';
+        }).toList();
+        // Store orders in local storage
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', userId);
+        await prefs.setStringList('orders', ordersData);
+      } else {}
+    } catch (e) {
+      print("Error fetching orders: $e");
+    }
+  }
+
+  static Future<void> getLastOrders() async {
+    try {
+      final prefes = await SharedPreferences.getInstance();
+      String userId = prefes.getString('userId') ?? '';
+      List orders = prefes.getStringList('orders') ?? [];
+
+      // Await the Firestore query to get the collection snapshot
+      final lastOrdersCollection =
+          FirebaseFirestore.instance.collection('kitchens');
+      orders.map((_) {
+        final data = lastOrdersCollection.doc(_.toString()).get();
+
+        print('data: $data');
+      });
+      // print(orders);
+
+      // print(lastOrdersCollection.data());
+    } catch (e) {
+      print("Error fetching orders: $e");
     }
   }
 }

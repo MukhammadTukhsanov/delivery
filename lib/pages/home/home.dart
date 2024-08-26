@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
+import 'package:yolda/controllers/auth_service.dart';
 import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/controllers/location_helper.dart';
 import 'package:yolda/controllers/user_location.dart';
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isLoading = false;
     });
+    Gets.getLastOrders();
     getUserLocation().then((_) {
       setState(() {
         _isLoading = false;
@@ -50,7 +52,11 @@ class _HomePageState extends State<HomePage> {
             : SingleChildScrollView(
                 child: Column(
                   children: [
-                    const HeaderLocation(),
+                    GestureDetector(
+                        onDoubleTap: () {
+                          AuthService.logout();
+                        },
+                        child: const HeaderLocation()),
                     const SizedBox(height: 16),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -76,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                             text: "Oldingi buyurtmalaringiz",
                             onTap: () {},
                           ),
-                          ItemCard(),
+                          ItemCard(scrollDirection: 'horizontal'),
                           // const SingleChildScrollView(
                           //   scrollDirection: Axis.horizontal,
                           //   child: Padding(
@@ -90,6 +96,9 @@ class _HomePageState extends State<HomePage> {
                           //     ),
                           //   ),
                           // ),
+                          const Divider(),
+                          ListTitle(text: "Oshxonalar"),
+                          ItemCard(scrollDirection: 'vertical'),
                           const SizedBox(height: 8),
                           // Kitchens(),
                           const SizedBox(height: 20)

@@ -13,7 +13,7 @@ class _ListTitleState extends State<ListTitle> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 4.0),
       child: GestureDetector(
         onTap: widget.onTap ?? () {},
         child: Row(

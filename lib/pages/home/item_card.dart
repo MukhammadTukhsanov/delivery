@@ -1,18 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:yolda/controllers/gets.dart';
 
 class ItemCard extends StatefulWidget {
-  const ItemCard({super.key});
+  String scrollDirection;
+  ItemCard({super.key, required this.scrollDirection});
 
   @override
   State<ItemCard> createState() => _ItemCardState();
 }
 
 class _ItemCardState extends State<ItemCard> {
+  late Future<List<Map<String, dynamic>>> _kitchensFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadKitchens();
+  }
+
+  void _loadKitchens() {
+    setState(() {
+      _kitchensFuture = _fetchKitchens();
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchKitchens() async {
+    try {
+      return await Gets.kitchens();
+    } catch (e) {
+      print('Error fetching kitchens: $e');
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+        future: _kitchensFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No kitchens available'));
+          }
+
+          final kitchensData = snapshot.data!;
+
+          return SingleChildScrollView(
+            scrollDirection: widget.scrollDirection == 'horizontal'
+                ? Axis.horizontal
+                : Axis.vertical,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: 16.0,
+                  top: 8,
+                  right: widget.scrollDirection == 'horizontal' ? 0 : 16),
+              child: widget.scrollDirection == 'horizontal'
+                  ? Row(
+                      children: [
+                        ...kitchensData.map((e) {
+                          return item(
+                            afterFree: e['after-free'],
+                            deliveryPrice: e['delivery-price'],
+                            maxDeliveryTime: e['max-delivery-time'],
+                            minDeliveryTime: e['min-delivery-time'],
+                            minOrder: e['min-order'],
+                            name: e['name'],
+                            photo: e['imageUrl'],
+                          );
+                        })
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        ...kitchensData.map((e) {
+                          return item(
+                            afterFree: e['after-free'],
+                            deliveryPrice: e['delivery-price'],
+                            maxDeliveryTime: e['max-delivery-time'],
+                            minDeliveryTime: e['min-delivery-time'],
+                            minOrder: e['min-order'],
+                            name: e['name'],
+                            photo: e['imageUrl'],
+                          );
+                        })
+                      ],
+                    ),
+            ),
+          );
+        });
+  }
+
+  Container item(
+      {required String photo,
+      required String name,
+      required String minOrder,
+      required String minDeliveryTime,
+      required String maxDeliveryTime,
+      required String deliveryPrice,
+      required String afterFree}) {
     return Container(
-      margin: const EdgeInsets.only(right: 12),
-      width: 300,
+      margin: const EdgeInsets.only(right: 12, bottom: 16),
+      width: widget.scrollDirection == 'horizontal'
+          ? 300
+          : MediaQuery.sizeOf(context).width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
@@ -30,9 +123,9 @@ class _ItemCardState extends State<ItemCard> {
                   topLeft: Radius.circular(8),
                   topRight: Radius.circular(8),
                 ),
-                child: Image.asset(
-                  'assets/img/pizzad.png',
-                  width: 300,
+                child: Image.network(
+                  photo,
+                  width: double.infinity,
                   height: 160,
                   fit: BoxFit.cover,
                 ),
@@ -61,63 +154,52 @@ class _ItemCardState extends State<ItemCard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "Domino's Pizza",
-                      style: TextStyle(
+                    Text(
+                      name,
+                      style: const TextStyle(
                         fontFamily: 'Josefin Sans',
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Color(0xff3c486b),
                       ),
                     ),
-                    Row(
-                      children: [
-                        Transform.translate(
-                          offset: const Offset(0, -3),
-                          child: Image.asset(
-                            'assets/img/star.png',
-                            width: 16,
-                            height: 16,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          "4.0",
-                          style: TextStyle(
-                            fontFamily: 'Josefin Sans',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff3c486b),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "(100+)",
-                          style: TextStyle(
-                            fontFamily: 'Josefin Sans',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff3c486b).withOpacity(.5),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Transform.translate(
+                    //       offset: const Offset(0, -3),
+                    //       child: Image.asset(
+                    //         'assets/img/star.png',
+                    //         width: 16,
+                    //         height: 16,
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 8),
+                    //     const Text(
+                    //       "4.0",
+                    //       style: TextStyle(
+                    //         fontFamily: 'Josefin Sans',
+                    //         fontSize: 18,
+                    //         fontWeight: FontWeight.w700,
+                    //         color: Color(0xff3c486b),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 8),
+                    //     Text(
+                    //       "(100+)",
+                    //       style: TextStyle(
+                    //         fontFamily: 'Josefin Sans',
+                    //         fontSize: 18,
+                    //         fontWeight: FontWeight.w700,
+                    //         color: Color(0xff3c486b).withOpacity(.5),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
                 Row(
                   children: [
-                    Text(
-                      "kamida - ",
-                      style: _textStyle,
-                    ),
-                    Text(
-                      "50 000",
-                      style: _textStyle,
-                    ),
-                    Text(
-                      " So'm",
-                      style: _textStyle,
-                    ),
+                    Text("kamida - $minOrder So'm", style: _textStyle),
                   ],
                 ),
                 Row(
@@ -126,14 +208,8 @@ class _ItemCardState extends State<ItemCard> {
                       children: [
                         Image.asset('assets/img/clock.png', width: 16),
                         const SizedBox(width: 6),
-                        Text(
-                          "12-25",
-                          style: _textStyle,
-                        ),
-                        Text(
-                          " min",
-                          style: _textStyle,
-                        ),
+                        Text("$minDeliveryTime-$maxDeliveryTime min",
+                            style: _textStyle),
                       ],
                     ),
                     const SizedBox(width: 10),
@@ -150,19 +226,49 @@ class _ItemCardState extends State<ItemCard> {
                       children: [
                         Image.asset('assets/img/delivery.png', width: 16),
                         const SizedBox(width: 6),
-                        Text(
-                          "10 000",
-                          style: _textStyle,
-                        ),
-                        Text(
-                          " So'm",
-                          style: _textStyle,
-                        ),
+                        Text("$deliveryPrice So'm", style: _textStyle),
                       ],
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
+                widget.scrollDirection != 'horizontal'
+                    ? Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xff3c486b).withOpacity(.1),
+                          border: Border.all(
+                            width: 1,
+                            color: const Color(0xff3c486b).withOpacity(.5),
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              'assets/img/discount.png',
+                              width: 20,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                "Tekin yetkazib berish $afterFree so'm dan yuqori buyurtmada",
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xff3c486b),
+                                  fontFamily: 'Josefin Sans',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox()
               ],
             ),
           ),
