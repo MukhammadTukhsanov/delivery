@@ -1,5 +1,6 @@
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'user_location.dart'; // Import your UserLocation class
 
 Future<Set<double?>> locationService() async {

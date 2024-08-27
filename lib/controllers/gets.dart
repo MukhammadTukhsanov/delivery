@@ -68,25 +68,70 @@ class Gets {
     }
   }
 
-  static Future<void> getLastOrders() async {
+  static Future<List<Map<String, dynamic>>> getLastOrders() async {
+    const defaultImageUrl =
+        'default_image_url'; // Consider moving to config or environment variables
     try {
-      final prefes = await SharedPreferences.getInstance();
-      String userId = prefes.getString('userId') ?? '';
-      List orders = prefes.getStringList('orders') ?? [];
+      final prefs = await SharedPreferences.getInstance();
+      String userId = prefs.getString('userId') ?? '';
+      List<String> orders = prefs.getStringList('orders') ?? [];
+      List<Map<String, dynamic>> lastKitchensData = [];
 
-      // Await the Firestore query to get the collection snapshot
       final lastOrdersCollection =
           FirebaseFirestore.instance.collection('kitchens');
-      orders.map((_) {
-        final data = lastOrdersCollection.doc(_.toString()).get();
 
-        print('data: $data');
-      });
-      // print(orders);
+      // Ensure _firebaseStorage is properly initialized
+      // final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
-      // print(lastOrdersCollection.data());
+      for (String orderId in orders) {
+        final docSnapshot = await lastOrdersCollection.doc(orderId).get();
+        Map<String, dynamic> data =
+            docSnapshot.data() as Map<String, dynamic>? ?? {};
+
+        String? imagePath = data['photo'] as String?;
+        if (imagePath != null && imagePath.isNotEmpty) {
+          try {
+            String imageUrl =
+                await _firebaseStorage.ref(imagePath).getDownloadURL();
+            data['imageUrl'] = imageUrl;
+          } catch (e) {
+            // Assign default image URL and log the error
+            data['imageUrl'] = defaultImageUrl;
+            print('Error fetching image URL for $imagePath: $e');
+          }
+        }
+        lastKitchensData.add(data);
+      }
+      return lastKitchensData;
     } catch (e) {
       print("Error fetching orders: $e");
+      return []; // Return an empty list in case of an error
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getMenu(
+      {required String kitchen}) async {
+    final menuCollection = FirebaseFirestore.instance
+        .collection('kitchens')
+        .doc(kitchen)
+        .collection('menu');
+    List<Map<String, dynamic>> menuData = [];
+    try {
+      final querySnapshot = await menuCollection.get();
+      for (var doc in querySnapshot.docs) {
+        Map data = doc.data();
+        String imagePath = data["photo"];
+        if (imagePath != null && imagePath.isNotEmpty) {
+          String imageURL =
+              await _firebaseStorage.ref(imagePath).getDownloadURL();
+          data['imageUrl'] = imageURL;
+        }
+        print(doc.data());
+      }
+      return menuData;
+    } catch (e) {
+      print("Error fetching orders: $e");
+      return []; // Return an empty list in case of an error
     }
   }
 }

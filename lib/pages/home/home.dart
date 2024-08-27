@@ -27,9 +27,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isLoading = false;
-    });
     Gets.getLastOrders();
     getUserLocation().then((_) {
       setState(() {
@@ -82,7 +79,9 @@ class _HomePageState extends State<HomePage> {
                             text: "Oldingi buyurtmalaringiz",
                             onTap: () {},
                           ),
-                          ItemCard(scrollDirection: 'horizontal'),
+                          ItemCard(
+                              orders: 'lastOrders',
+                              scrollDirection: 'horizontal'),
                           // const SingleChildScrollView(
                           //   scrollDirection: Axis.horizontal,
                           //   child: Padding(
