@@ -25,16 +25,33 @@ class MarketPage extends StatefulWidget {
 }
 
 class _MarketPageState extends State<MarketPage> {
+  String ingredientsText = '';
+
+  Map<String, String> ingredients = {
+    '0': 'un',
+    '1': "go'sht",
+  };
+
   @override
   void initState() {
-    Gets.getMenu(kitchen: "sharqona");
     super.initState();
+    Gets.getMenu(kitchen: "sharqona");
+
+    ingredientsText = ingredients.entries.map((e) => e.value).join(', ') + ', ';
+    print(ingredientsText);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: ListTile(
             title: Text("${UserLocation.city}, ${UserLocation.street}",
                 style: TextStyle(
@@ -153,8 +170,42 @@ class _MarketPageState extends State<MarketPage> {
             ),
           ),
           const Divider(),
-          Column(
-            children: [],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Shashlik Tugun",
+                  style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff3c486b)),
+                ),
+                Text(
+                  "25 000 so'm",
+                  style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff3c486b).withOpacity(.8)),
+                ),
+                Text(
+                  ingredientsText,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0xff3c486b).withOpacity(.8),
+                      fontFamily: 'Josefin Sans',
+                      letterSpacing: 2),
+                )
+                // Row(
+                //   children: ingredients.entries.map((e) {
+                //     return Text(e.value + ', ');
+                //   }).toList(),
+                // )
+              ],
+            ),
           )
         ],
       )),

@@ -113,9 +113,9 @@ class AuthService {
     // Get and store the order data
     await Gets.getAndStoreOrderData(userId);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login Successful')),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(content: Text('Login Successful')),
+    // );
   }
 }
 

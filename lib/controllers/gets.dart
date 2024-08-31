@@ -119,15 +119,28 @@ class Gets {
     try {
       final querySnapshot = await menuCollection.get();
       for (var doc in querySnapshot.docs) {
-        Map data = doc.data();
+        Map<String, dynamic> data = doc.data();
         String imagePath = data["photo"];
         if (imagePath != null && imagePath.isNotEmpty) {
           String imageURL =
               await _firebaseStorage.ref(imagePath).getDownloadURL();
           data['imageUrl'] = imageURL;
         }
-        print(doc.data());
+        print(doc.id);
+        final ingredients =
+            menuCollection.doc(doc.id).collection('ingredients');
+        List<Map<String, dynamic>> ingredientsData = [];
+        try {
+          final ingredientsSnapshot = await ingredients.get();
+          data['ingredients'] = (ingredientsSnapshot.docs[0].data());
+        } catch (e) {
+          print("Error fetching orders: $e");
+          return [];
+        }
+
+        menuData.add(data);
       }
+      print(menuData);
       return menuData;
     } catch (e) {
       print("Error fetching orders: $e");
