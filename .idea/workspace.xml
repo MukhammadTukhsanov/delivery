@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="05561f7a-8bc2-40c1-a310-04c484dd8a80" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/controllers/gets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controllers/gets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/home/header_menu.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home/header_menu.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/pages/home/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home/home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/home/item_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home/item_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/market/index.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/market/index.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +60,7 @@
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "main",
+    "io.flutter.reload.alreadyRun": "true",
     "last_opened_file_path": "/Users/mukhammad/Desktop/yolda",
     "show.migrate.to.gradle.popup": "false"
   }

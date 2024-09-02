@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:location/location.dart';
 import 'package:yolda/controllers/auth_service.dart';
 import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/controllers/location_helper.dart';
-import 'package:yolda/controllers/user_location.dart';
 import 'package:yolda/pages/home/header_location.dart';
 import 'package:yolda/pages/home/header_menu.dart';
 import 'package:yolda/pages/home/item_card.dart';
-import 'package:yolda/pages/home/kitchens/index.dart';
 import 'package:yolda/pages/home/list_title.dart';
-import 'package:yolda/pages/home/market_item.dart';
 import 'package:yolda/widgets/textField/text_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -97,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                           // ),
                           const Divider(),
                           ListTitle(text: "Oshxonalar"),
-                          ItemCard(scrollDirection: 'vertical'),
+                          ItemCard(maxItems: 3, scrollDirection: 'vertical'),
                           const SizedBox(height: 8),
                           // Kitchens(),
                           const SizedBox(height: 20)

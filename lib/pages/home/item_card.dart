@@ -4,9 +4,11 @@ import 'package:yolda/pages/home/home.dart';
 import 'package:yolda/pages/market/index.dart';
 
 class ItemCard extends StatefulWidget {
+  int? maxItems;
   String? orders;
   String scrollDirection;
-  ItemCard({super.key, required this.scrollDirection, this.orders});
+  ItemCard(
+      {super.key, required this.scrollDirection, this.orders, this.maxItems});
 
   @override
   State<ItemCard> createState() => _ItemCardState();
@@ -53,8 +55,12 @@ class _ItemCardState extends State<ItemCard> {
             return Center(child: Text('No kitchens available'));
           }
 
-          final kitchensData = snapshot.data!;
-
+          List<Map<String, dynamic>> kitchensData = snapshot.data!;
+          if (kitchensData.isNotEmpty &&
+              kitchensData.length > 3 &&
+              widget.maxItems != null) {
+            kitchensData = kitchensData.sublist(0, 3);
+          }
           return SingleChildScrollView(
             scrollDirection: widget.scrollDirection == 'horizontal'
                 ? Axis.horizontal
@@ -69,14 +75,15 @@ class _ItemCardState extends State<ItemCard> {
                       children: [
                         ...kitchensData.map((e) {
                           return item(
-                            afterFree: e['after-free'],
-                            deliveryPrice: e['delivery-price'],
-                            maxDeliveryTime: e['max-delivery-time'],
-                            minDeliveryTime: e['min-delivery-time'],
-                            minOrder: e['min-order'],
-                            name: e['name'],
-                            photo: e['imageUrl'],
-                          );
+                              scrollDirection: 'horizontal',
+                              afterFree: e['after-free'],
+                              deliveryPrice: e['delivery-price'],
+                              maxDeliveryTime: e['max-delivery-time'],
+                              minDeliveryTime: e['min-delivery-time'],
+                              minOrder: e['min-order'],
+                              name: e['name'],
+                              photo: e['imageUrl'],
+                              kitchenName: e['kitchenName']);
                         })
                       ],
                     )
@@ -84,15 +91,23 @@ class _ItemCardState extends State<ItemCard> {
                       children: [
                         ...kitchensData.map((e) {
                           return item(
-                            afterFree: e['after-free'],
-                            deliveryPrice: e['delivery-price'],
-                            maxDeliveryTime: e['max-delivery-time'],
-                            minDeliveryTime: e['min-delivery-time'],
-                            minOrder: e['min-order'],
-                            name: e['name'],
-                            photo: e['imageUrl'],
-                          );
-                        })
+                              scrollDirection: 'vertical',
+                              afterFree: e['after-free'],
+                              deliveryPrice: e['delivery-price'],
+                              maxDeliveryTime: e['max-delivery-time'],
+                              minDeliveryTime: e['min-delivery-time'],
+                              minOrder: e['min-order'],
+                              name: e['name'],
+                              photo: e['imageUrl'],
+                              kitchenName: e['kitchenName'].toString());
+                        }),
+                        Container(
+                          child: TextButton(
+                            child: Text(
+                                'Barchasini ko`rsatish ${snapshot.data!.length - widget.maxItems!}'),
+                            onPressed: () {},
+                          ),
+                        ),
                       ],
                     ),
             ),
@@ -101,13 +116,15 @@ class _ItemCardState extends State<ItemCard> {
   }
 
   GestureDetector item(
-      {required String photo,
+      {String? scrollDirection,
+      required String photo,
       required String name,
       required String minOrder,
       required String minDeliveryTime,
       required String maxDeliveryTime,
       required String deliveryPrice,
-      required String afterFree}) {
+      required String afterFree,
+      required String kitchenName}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -120,10 +137,13 @@ class _ItemCardState extends State<ItemCard> {
                     minDeliveryTime: minDeliveryTime,
                     maxDeliveryTime: maxDeliveryTime,
                     deliveryPrice: deliveryPrice,
-                    afterFree: afterFree)));
+                    afterFree: afterFree,
+                    kitchenName: kitchenName)));
       },
       child: Container(
-        margin: const EdgeInsets.only(right: 12, bottom: 16),
+        margin: EdgeInsets.only(
+            bottom: scrollDirection == 'horizontal' ? 0 : 16,
+            right: scrollDirection == 'horizontal' ? 16 : 0),
         width: widget.scrollDirection == 'horizontal'
             ? 300
             : MediaQuery.sizeOf(context).width,

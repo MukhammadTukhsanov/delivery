@@ -100,8 +100,10 @@ class Gets {
             print('Error fetching image URL for $imagePath: $e');
           }
         }
+        data['kitchenName'] = docSnapshot.id;
         lastKitchensData.add(data);
       }
+      print('last kitchens: $lastKitchensData');
       return lastKitchensData;
     } catch (e) {
       print("Error fetching orders: $e");
@@ -140,7 +142,7 @@ class Gets {
 
         menuData.add(data);
       }
-      print(menuData);
+      // print(menuData);
       return menuData;
     } catch (e) {
       print("Error fetching orders: $e");

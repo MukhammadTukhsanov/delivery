@@ -10,6 +10,7 @@ class MarketPage extends StatefulWidget {
   String maxDeliveryTime;
   String deliveryPrice;
   String afterFree;
+  String kitchenName;
   MarketPage(
       {super.key,
       required this.afterFree,
@@ -18,7 +19,8 @@ class MarketPage extends StatefulWidget {
       required this.minDeliveryTime,
       required this.minOrder,
       required this.name,
-      required this.photo});
+      required this.photo,
+      required this.kitchenName});
 
   @override
   State<MarketPage> createState() => _MarketPageState();
@@ -31,14 +33,24 @@ class _MarketPageState extends State<MarketPage> {
     '0': 'un',
     '1': "go'sht",
   };
-
+  List<Map<String, dynamic>> data = [];
   @override
   void initState() {
     super.initState();
-    Gets.getMenu(kitchen: "sharqona");
+    _fetchMenuData();
+  }
 
-    ingredientsText = ingredients.entries.map((e) => e.value).join(', ') + ', ';
-    print(ingredientsText);
+  Future<void> _fetchMenuData() async {
+    try {
+      List<Map<String, dynamic>> fetchedData =
+          await Gets.getMenu(kitchen: widget.kitchenName);
+      setState(() {
+        data = fetchedData;
+      });
+      print('Data: $data');
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
   }
 
   @override
@@ -170,45 +182,113 @@ class _MarketPageState extends State<MarketPage> {
             ),
           ),
           const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Shashlik Tugun",
-                  style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff3c486b)),
-                ),
-                Text(
-                  "25 000 so'm",
-                  style: TextStyle(
-                      fontFamily: 'Josefin Sans',
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff3c486b).withOpacity(.8)),
-                ),
-                Text(
-                  ingredientsText,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xff3c486b).withOpacity(.8),
-                      fontFamily: 'Josefin Sans',
-                      letterSpacing: 2),
-                )
-                // Row(
-                //   children: ingredients.entries.map((e) {
-                //     return Text(e.value + ', ');
-                //   }).toList(),
-                // )
-              ],
-            ),
-          )
+          ...data.asMap().entries.map((e) {
+            var item = e.value;
+            int index = e.key;
+            return menuItems(
+                foodName: item['name'],
+                foodPrice: item['price'],
+                imageURL: item['imageUrl'],
+                ingredients: item['ingredients']);
+          })
+          // menuItems()
         ],
       )),
+    );
+  }
+
+  Padding menuItems(
+      {required String foodName,
+      required String foodPrice,
+      required String imageURL,
+      required Map<String, dynamic> ingredients}) {
+    setState(() {
+      ingredientsText = ingredients.values.join(', ') + ', ';
+    });
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        width: MediaQuery.sizeOf(context).width,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+            border: Border.all(
+                width: 1, color: const Color(0xff3c486b).withOpacity(.3)),
+            borderRadius: BorderRadius.circular(12)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(foodName,
+                      style: const TextStyle(
+                          fontFamily: 'Josefin Sans',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xff3c486b))),
+                  Text(foodPrice,
+                      style: TextStyle(
+                          fontFamily: 'Josefin Sans',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xff3c486b).withOpacity(.8))),
+                  Text(
+                    ingredientsText.substring(0, ingredientsText.length - 2),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: const Color(0xff3c486b).withOpacity(.8),
+                        fontFamily: 'Josefin Sans',
+                        letterSpacing: 2),
+                  )
+                ],
+              ),
+            ),
+            Container(
+                width: 110,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 1,
+                        color: const Color(0xff3c486b).withOpacity(0.4)),
+                    borderRadius: BorderRadius.circular(12)),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(imageURL),
+                    ),
+                    Positioned(
+                      right: 6,
+                      bottom: 6,
+                      child: GestureDetector(
+                        child: Container(
+                            width: 30,
+                            height: 30,
+                            padding: EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Color(0xff3c486b).withOpacity(.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 0))
+                                ],
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Center(
+                              child: Image.asset('assets/img/plus.png'),
+                            )),
+                      ),
+                    ),
+                  ],
+                ))
+          ],
+        ),
+      ),
     );
   }
 

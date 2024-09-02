@@ -49,7 +49,7 @@ Future<void> getUserLocation() async {
     List<Placemark> placemarks = await placemarkFromCoordinates(
       latitude,
       longitude,
-    ).timeout(const Duration(seconds: 20));
+    ).timeout(const Duration(seconds: 40));
 
     UserLocation.lat = latitude;
     UserLocation.long = longitude;
