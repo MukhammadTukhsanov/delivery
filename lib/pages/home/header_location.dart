@@ -22,7 +22,7 @@ class HeaderLocation extends StatelessWidget {
               Transform.translate(
                 offset: const Offset(0, 2),
                 child: Text(
-                  "${UserLocation.city}, ${UserLocation.street}",
+                  "${UserLocation.street}, ${UserLocation.place}",
                   style: const TextStyle(
                     fontFamily: 'Josefin Sans',
                     fontWeight: FontWeight.w700,
@@ -34,7 +34,7 @@ class HeaderLocation extends StatelessWidget {
               Transform.translate(
                 offset: const Offset(0, -2),
                 child: Text(
-                  UserLocation.region,
+                  "${UserLocation.locality}, ${UserLocation.region.substring(0, UserLocation.region.length - 7)}",
                   style: const TextStyle(
                     fontFamily: 'Josefin Sans',
                     color: Colors.white,

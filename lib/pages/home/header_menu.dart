@@ -11,9 +11,9 @@ class HeaderMenu extends StatefulWidget {
 class _HeaderMenuState extends State<HeaderMenu> {
   List headerMenu = [
     {'text': 'Chegirmalar', 'img': 'assets/img/discount.png'},
-    {'text': 'Savdo', 'img': 'assets/img/markets.png', 'navigate': ''},
-    {'text': 'Kuponlarim', 'img': 'assets/img/coupons.png', 'navigate': ''},
-    {'text': 'Kel ol', 'img': 'assets/img/yourself.png', 'navigate': ''}
+    {'text': 'Savdo', 'img': 'assets/img/markets.png'},
+    {'text': 'Kuponlarim', 'img': 'assets/img/coupons.png'},
+    {'text': 'Kel ol', 'img': 'assets/img/yourself.png'}
   ];
 
   void _navigateToScreen(String text) {

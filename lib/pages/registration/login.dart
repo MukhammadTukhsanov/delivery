@@ -54,9 +54,9 @@ class _LoginState extends State<Login> {
 
         // Navigate to the HomePage and show a success snackbar
         if (mounted) {
-          // Navigator.of(context).pushAndRemoveUntil(
-          //     MaterialPageRoute(builder: (context) => HomePage()),
-          //     (Route<dynamic> route) => false);
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomePage()),
+              (Route<dynamic> route) => false);
           AuthService.onLoginSuccess(context, _loginPageControllers[0].text);
 
           ScaffoldMessenger.of(context).showSnackBar(

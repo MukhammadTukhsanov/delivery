@@ -5,4 +5,6 @@ class UserLocation {
   static String city = '';
   static String street = '';
   static String region = '';
+  static String place = '';
+  static String locality = '';
 }

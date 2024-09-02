@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yolda/controllers/connectivityService.dart';
 import 'package:yolda/pages/onboarding/onboarding.dart';
 import 'package:yolda/pages/registration/auth_page.dart';
 import 'package:yolda/pages/registration/login.dart';
@@ -17,7 +18,7 @@ void main() async {
 class Routs extends StatelessWidget {
   final String initialRoute;
 
-  const Routs({super.key, required this.initialRoute});
+  Routs({super.key, required this.initialRoute});
 
   static Route<dynamic> _generateRoute(RouteSettings settings) {
     switch (settings.name) {

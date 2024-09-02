@@ -13,7 +13,7 @@ import 'package:yolda/routes/index.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const Routs(
+    await tester.pumpWidget(Routs(
       initialRoute: '/splash',
     ));
 

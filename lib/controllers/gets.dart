@@ -149,4 +149,40 @@ class Gets {
       return []; // Return an empty list in case of an error
     }
   }
+
+  static Future<List<Map<String, dynamic>>> getMarkets() async {
+    const defaultImageUrl =
+        'default_image_url'; // Move to config or env variable
+
+    try {
+      QuerySnapshot querySnapshot =
+          await _firebaseFirestore.collection('markets').get();
+      List<Map<String, dynamic>> marketsData = [];
+
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        String? imagePath = data['photo'] as String?;
+
+        if (imagePath != null && imagePath.isNotEmpty) {
+          try {
+            String imageUrl =
+                await _firebaseStorage.ref(imagePath).getDownloadURL();
+            data['imageUrl'] = imageUrl;
+          } catch (e) {
+            // Handle specific errors
+            data['imageUrl'] = defaultImageUrl; // Optional default image
+            print('Error fetching image URL for $imagePath: $e');
+          }
+        } else {
+          data['imageUrl'] = defaultImageUrl; // Optional default image
+        }
+
+        marketsData.add(data);
+      }
+      return marketsData;
+    } catch (e) {
+      print('Error fetching kitchens: $e');
+      return [];
+    }
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,28 +40,57 @@ Future<void> getUserLocation() async {
   try {
     final locationData = await locationService();
     if (locationData == null || locationData.isEmpty) {
-      // Handle the case when location data is not available
       print("Location data is not available.");
       return;
     }
 
-    double latitude = locationData.first!;
-    double longitude = locationData.last!;
+    double? latitude = locationData.first;
+    double? longitude = locationData.last;
 
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-      latitude,
-      longitude,
-    ).timeout(const Duration(seconds: 40));
+    if (latitude == null || longitude == null) {
+      print("Failed to retrieve valid location coordinates.");
+      return;
+    }
 
-    UserLocation.lat = latitude;
-    UserLocation.long = longitude;
-    UserLocation.country = placemarks[0].country ?? '';
-    UserLocation.city = placemarks[0].locality ?? placemarks[0].street ?? '';
-    UserLocation.street = placemarks[0].street ?? '';
-    UserLocation.region = placemarks[0].administrativeArea ??
-        placemarks[0].subAdministrativeArea ??
-        '';
+    try {
+      List<Placemark> placemarks =
+          await _retryPlacemarkFromCoordinates(latitude, longitude, 3);
+      print('placemarks ${placemarks[1]}');
+      if (placemarks.isNotEmpty) {
+        UserLocation.lat = latitude;
+        UserLocation.long = longitude;
+        UserLocation.country = placemarks[1].country ?? '';
+        // UserLocation.city =
+        //     placemarks[1].locality ?? placemarks[1].street ?? '';
+        UserLocation.street = placemarks[1].thoroughfare ?? '';
+        UserLocation.locality = placemarks[1].locality ?? '';
+        UserLocation.region = placemarks[1].administrativeArea ??
+            placemarks[1].subAdministrativeArea ??
+            '';
+        UserLocation.place = placemarks[1].street ?? '';
+      } else {
+        print("Could not retrieve address information.");
+      }
+    } catch (e) {
+      print("Error getting location or address: $e");
+    }
   } catch (e) {
     print("Error getting location or address: $e");
   }
+}
+
+Future<List<Placemark>> _retryPlacemarkFromCoordinates(
+    double latitude, double longitude, int retries) async {
+  for (int attempt = 0; attempt < retries; attempt++) {
+    try {
+      return await placemarkFromCoordinates(latitude, longitude)
+          .timeout(const Duration(seconds: 60));
+    } on TimeoutException {
+      if (attempt == retries - 1) {
+        rethrow;
+      }
+      print("Retrying reverse geocoding... (attempt ${attempt + 1})");
+    }
+  }
+  return []; // Return an empty list if all retries fail
 }
