@@ -7,6 +7,47 @@ class Gets {
       FirebaseFirestore.instance;
   static final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
+  static Future<List<Map<String, dynamic>>> getLastOrders() async {
+    const defaultImageUrl =
+        'default_image_url'; // Consider moving to config or environment variables
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      List<String> orders = prefs.getStringList('orders') ?? [];
+      List<Map<String, dynamic>> lastKitchensData = [];
+
+      final lastOrdersCollection =
+          FirebaseFirestore.instance.collection('kitchens');
+
+      // Ensure _firebaseStorage is properly initialized
+      // final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+
+      for (String orderId in orders) {
+        final docSnapshot = await lastOrdersCollection.doc(orderId).get();
+        Map<String, dynamic> data =
+            docSnapshot.data() as Map<String, dynamic>? ?? {};
+
+        String? imagePath = data['photo'] as String?;
+        if (imagePath != null && imagePath.isNotEmpty) {
+          try {
+            String imageUrl =
+                await _firebaseStorage.ref(imagePath).getDownloadURL();
+            data['imageUrl'] = imageUrl;
+          } catch (e) {
+            // Assign default image URL and log the error
+            data['imageUrl'] = defaultImageUrl;
+            print('Error fetching image URL for $imagePath: $e');
+          }
+        }
+        data['kitchenName'] = docSnapshot.id;
+        lastKitchensData.add(data);
+      }
+      return lastKitchensData;
+    } catch (e) {
+      print("Error fetching orders: $e");
+      return []; // Return an empty list in case of an error
+    }
+  }
+
   static Future<List<Map<String, dynamic>>> kitchens() async {
     const defaultImageUrl =
         'default_image_url'; // Move to config or env variable
@@ -15,7 +56,6 @@ class Gets {
       QuerySnapshot querySnapshot =
           await _firebaseFirestore.collection('kitchens').get();
       List<Map<String, dynamic>> kitchensData = [];
-
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         String? imagePath = data['photo'] as String?;
@@ -25,6 +65,8 @@ class Gets {
             String imageUrl =
                 await _firebaseStorage.ref(imagePath).getDownloadURL();
             data['imageUrl'] = imageUrl;
+            data['kitchenName'] = doc.id;
+            data['filter'] = 'kitchens';
           } catch (e) {
             // Handle specific errors
             data['imageUrl'] = defaultImageUrl; // Optional default image
@@ -33,7 +75,7 @@ class Gets {
         } else {
           data['imageUrl'] = defaultImageUrl; // Optional default image
         }
-
+        // data['kitchenName'] = querySnapshot.id;
         kitchensData.add(data);
       }
       return kitchensData;
@@ -68,53 +110,11 @@ class Gets {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getLastOrders() async {
-    const defaultImageUrl =
-        'default_image_url'; // Consider moving to config or environment variables
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      String userId = prefs.getString('userId') ?? '';
-      List<String> orders = prefs.getStringList('orders') ?? [];
-      List<Map<String, dynamic>> lastKitchensData = [];
-
-      final lastOrdersCollection =
-          FirebaseFirestore.instance.collection('kitchens');
-
-      // Ensure _firebaseStorage is properly initialized
-      // final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-
-      for (String orderId in orders) {
-        final docSnapshot = await lastOrdersCollection.doc(orderId).get();
-        Map<String, dynamic> data =
-            docSnapshot.data() as Map<String, dynamic>? ?? {};
-
-        String? imagePath = data['photo'] as String?;
-        if (imagePath != null && imagePath.isNotEmpty) {
-          try {
-            String imageUrl =
-                await _firebaseStorage.ref(imagePath).getDownloadURL();
-            data['imageUrl'] = imageUrl;
-          } catch (e) {
-            // Assign default image URL and log the error
-            data['imageUrl'] = defaultImageUrl;
-            print('Error fetching image URL for $imagePath: $e');
-          }
-        }
-        data['kitchenName'] = docSnapshot.id;
-        lastKitchensData.add(data);
-      }
-      print('last kitchens: $lastKitchensData');
-      return lastKitchensData;
-    } catch (e) {
-      print("Error fetching orders: $e");
-      return []; // Return an empty list in case of an error
-    }
-  }
-
   static Future<List<Map<String, dynamic>>> getMenu(
-      {required String kitchen}) async {
+      {required String kitchen, required String filter}) async {
+    print('getting menu: ${kitchen}');
     final menuCollection = FirebaseFirestore.instance
-        .collection('kitchens')
+        .collection(filter)
         .doc(kitchen)
         .collection('menu');
     List<Map<String, dynamic>> menuData = [];
@@ -128,16 +128,17 @@ class Gets {
               await _firebaseStorage.ref(imagePath).getDownloadURL();
           data['imageUrl'] = imageURL;
         }
-        print(doc.id);
         final ingredients =
             menuCollection.doc(doc.id).collection('ingredients');
         List<Map<String, dynamic>> ingredientsData = [];
-        try {
-          final ingredientsSnapshot = await ingredients.get();
-          data['ingredients'] = (ingredientsSnapshot.docs[0].data());
-        } catch (e) {
-          print("Error fetching orders: $e");
-          return [];
+        if (filter != 'markets') {
+          try {
+            final ingredientsSnapshot = await ingredients.get();
+            data['ingredients'] = (ingredientsSnapshot.docs[0].data());
+          } catch (e) {
+            print("Error fetching orders: $e");
+            return [];
+          }
         }
 
         menuData.add(data);
@@ -168,6 +169,8 @@ class Gets {
             String imageUrl =
                 await _firebaseStorage.ref(imagePath).getDownloadURL();
             data['imageUrl'] = imageUrl;
+            data['kitchenName'] = doc.id;
+            data['filter'] = 'markets';
           } catch (e) {
             // Handle specific errors
             data['imageUrl'] = defaultImageUrl; // Optional default image

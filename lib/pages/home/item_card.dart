@@ -49,10 +49,11 @@ class _ItemCardState extends State<ItemCard> {
   }
 
   void _navigateToMarketPage(BuildContext context, Map<String, dynamic> data) {
+    print('data: $data');
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MarketPage(
+        builder: (context) => KitchenPage(
           photo: data['imageUrl'],
           name: data['name'],
           minOrder: data['min-order'],
@@ -60,7 +61,8 @@ class _ItemCardState extends State<ItemCard> {
           maxDeliveryTime: data['max-delivery-time'],
           deliveryPrice: data['delivery-price'],
           afterFree: data['after-free'],
-          kitchenName: data['kitchenName'],
+          filter: data['filter'],
+          kitchenName: data['kitchenName'].toString(),
         ),
       ),
     );

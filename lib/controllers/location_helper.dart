@@ -55,7 +55,6 @@ Future<void> getUserLocation() async {
     try {
       List<Placemark> placemarks =
           await _retryPlacemarkFromCoordinates(latitude, longitude, 3);
-      print('placemarks ${placemarks[1]}');
       if (placemarks.isNotEmpty) {
         UserLocation.lat = latitude;
         UserLocation.long = longitude;

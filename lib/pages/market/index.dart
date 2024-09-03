@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/controllers/user_location.dart';
 
-class MarketPage extends StatefulWidget {
+class KitchenPage extends StatefulWidget {
   String photo;
   String name;
   String minOrder;
@@ -10,8 +12,9 @@ class MarketPage extends StatefulWidget {
   String maxDeliveryTime;
   String deliveryPrice;
   String afterFree;
+  String filter;
   String kitchenName;
-  MarketPage(
+  KitchenPage(
       {super.key,
       required this.afterFree,
       required this.deliveryPrice,
@@ -20,19 +23,15 @@ class MarketPage extends StatefulWidget {
       required this.minOrder,
       required this.name,
       required this.photo,
+      required this.filter,
       required this.kitchenName});
 
   @override
-  State<MarketPage> createState() => _MarketPageState();
+  State<KitchenPage> createState() => _KitchenPageState();
 }
 
-class _MarketPageState extends State<MarketPage> {
+class _KitchenPageState extends State<KitchenPage> {
   String ingredientsText = '';
-
-  Map<String, String> ingredients = {
-    '0': 'un',
-    '1': "go'sht",
-  };
   List<Map<String, dynamic>> data = [];
   @override
   void initState() {
@@ -42,12 +41,12 @@ class _MarketPageState extends State<MarketPage> {
 
   Future<void> _fetchMenuData() async {
     try {
-      List<Map<String, dynamic>> fetchedData =
-          await Gets.getMenu(kitchen: widget.kitchenName);
+      List<Map<String, dynamic>> fetchedData = await Gets.getMenu(
+          kitchen: widget.kitchenName, filter: widget.filter);
       setState(() {
+        print('feched data: $fetchedData');
         data = fetchedData;
       });
-      print('Data: $data');
     } catch (e) {
       print('Error fetching data: $e');
     }
@@ -65,7 +64,7 @@ class _MarketPageState extends State<MarketPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: ListTile(
-            title: Text("${UserLocation.city}, ${UserLocation.street}",
+            title: Text("${UserLocation.street}, ${UserLocation.place}",
                 style: TextStyle(
                   overflow: TextOverflow.ellipsis,
                   fontFamily: 'Josefin Sans',
@@ -73,7 +72,8 @@ class _MarketPageState extends State<MarketPage> {
                   color: const Color(0xff3C486B).withOpacity(.9),
                   fontSize: 18,
                 )),
-            subtitle: Text(UserLocation.region,
+            subtitle: Text(
+                "${UserLocation.locality}, ${UserLocation.region.substring(0, UserLocation.region.length - 7)}",
                 style: TextStyle(
                   fontFamily: 'Josefin Sans',
                   color: const Color(0xff3C486B).withOpacity(.9),
@@ -182,14 +182,24 @@ class _MarketPageState extends State<MarketPage> {
             ),
           ),
           const Divider(),
+          if(widget.filter == 'markets') 
+          GridView.count(crossAxisCount: 2, children: [
+            ...data.asMap().entries.map((e) {
+            var item = e.value;
+            int index = e.key;
+            return marketMenuItems(unitOfMeasure:)
+            })
+          ],)
+          else
           ...data.asMap().entries.map((e) {
             var item = e.value;
             int index = e.key;
-            return menuItems(
+            print('item: $e');
+            return kitchenMenuItems(
                 foodName: item['name'],
                 foodPrice: item['price'],
                 imageURL: item['imageUrl'],
-                ingredients: item['ingredients']);
+                ingredients: item['ingredients'] ?? {});
           })
           // menuItems()
         ],
@@ -197,7 +207,7 @@ class _MarketPageState extends State<MarketPage> {
     );
   }
 
-  Padding menuItems(
+  Padding kitchenMenuItems(
       {required String foodName,
       required String foodPrice,
       required String imageURL,
@@ -290,6 +300,12 @@ class _MarketPageState extends State<MarketPage> {
         ),
       ),
     );
+  }
+
+  Padding marketMenuItems() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child:Text("data"));
   }
 
   TextStyle get _textStyle => TextStyle(
