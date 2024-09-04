@@ -57,6 +57,25 @@ class _KitchenPageState extends State<KitchenPage> {
     super.dispose();
   }
 
+  var meniItems = [
+    {'text': 'Ko\'p sotilganlar', 'photo': 'markets.png'},
+    {'text': 'Meva va sabzavotlar', 'photo': 'fruitsAndVeggies.png'},
+    {'text': 'Ichimliklar', 'photo': 'drinks.png'},
+    {'text': 'Go\'sht mahsulotlari', 'photo': 'meat-products.png'},
+    {'text': 'Sut & nonushta', 'photo': 'milk & breakefast.png'},
+    {'text': 'Asosiy oziq-ovqat', 'photo': 'cooking-oils.png'},
+    {'text': 'Non mahsulotlari', 'photo': 'bread.png'},
+    {'text': 'Tozalik', 'photo': 'cleaning.png'},
+    {'text': 'Muzqaymoq', 'photo': 'icecream.png'},
+    {'text': 'Choy va Qahva', 'photo': 'cofee&tea.png'},
+    {'text': 'Shaxsiy gigiyena', 'photo': 'hygiene.png'},
+    {
+      'text': 'Bir martali ishlatiladigan mahsulotlar',
+      'photo': 'toilet-paper.png'
+    },
+    {'text': 'Boshqalar', 'photo': 'vector.png'}
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,25 +201,39 @@ class _KitchenPageState extends State<KitchenPage> {
             ),
           ),
           const Divider(),
-          if(widget.filter == 'markets') 
-          GridView.count(crossAxisCount: 2, children: [
-            ...data.asMap().entries.map((e) {
-            var item = e.value;
-            int index = e.key;
-            return marketMenuItems(unitOfMeasure:)
-            })
-          ],)
+          if (widget.filter == 'markets')
+            Expanded(
+              child: GridView.count(
+                addAutomaticKeepAlives: true,
+                addRepaintBoundaries: true,
+                addSemanticIndexes: true,
+                childAspectRatio: 3 / 3.3,
+                shrinkWrap: true,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 4,
+                crossAxisCount: 4,
+                children: [
+                  ...meniItems.asMap().entries.map((e) {
+                    var item = e.value;
+                    int index = e.key;
+                    return marketMenuItems(
+                        photo: item['photo']!, text: item['text']!, key: index);
+                  })
+                ],
+              ),
+            )
           else
-          ...data.asMap().entries.map((e) {
-            var item = e.value;
-            int index = e.key;
-            print('item: $e');
-            return kitchenMenuItems(
-                foodName: item['name'],
-                foodPrice: item['price'],
-                imageURL: item['imageUrl'],
-                ingredients: item['ingredients'] ?? {});
-          })
+            ...data.asMap().entries.map((e) {
+              var item = e.value;
+              int index = e.key;
+              print('item: $e');
+              return kitchenMenuItems(
+                  key: index,
+                  foodName: item['name'],
+                  foodPrice: item['price'],
+                  imageURL: item['imageUrl'],
+                  ingredients: item['ingredients'] ?? {});
+            })
           // menuItems()
         ],
       )),
@@ -208,14 +241,16 @@ class _KitchenPageState extends State<KitchenPage> {
   }
 
   Padding kitchenMenuItems(
-      {required String foodName,
+      {required int key,
+      required String foodName,
       required String foodPrice,
       required String imageURL,
       required Map<String, dynamic> ingredients}) {
     setState(() {
-      ingredientsText = ingredients.values.join(', ') + ', ';
+      ingredientsText = '${ingredients.values.join(', ')}, ';
     });
     return Padding(
+      key: ValueKey(key),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         width: MediaQuery.sizeOf(context).width,
@@ -302,15 +337,40 @@ class _KitchenPageState extends State<KitchenPage> {
     );
   }
 
-  Padding marketMenuItems() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child:Text("data"));
+  GestureDetector marketMenuItems(
+      {required String photo, required String text, required int key}) {
+    return GestureDetector(
+      onTap: () {},
+      child: Column(
+        key: ValueKey(key),
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 65,
+            width: 75,
+            child: Center(
+              child: Image.asset(
+                'assets/img/$photo',
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            text,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            style: _textStyle,
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
+    );
   }
 
   TextStyle get _textStyle => TextStyle(
         fontFamily: 'Josefin Sans',
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: FontWeight.w500,
         color: const Color(0xff3c486b).withOpacity(.5),
       );
