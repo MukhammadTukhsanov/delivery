@@ -34,7 +34,9 @@ class HeaderLocation extends StatelessWidget {
               Transform.translate(
                 offset: const Offset(0, -2),
                 child: Text(
-                  "${UserLocation.locality}, ${UserLocation.region.substring(0, UserLocation.region.length - 7)}",
+                  "${UserLocation.locality}, ${UserLocation.region
+                  // .substring(0, UserLocation.region.length - 7)
+                  }",
                   style: const TextStyle(
                     fontFamily: 'Josefin Sans',
                     color: Colors.white,

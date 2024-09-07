@@ -32,6 +32,7 @@ class Gets {
             String imageUrl =
                 await _firebaseStorage.ref(imagePath).getDownloadURL();
             data['imageUrl'] = imageUrl;
+            data['filter'] = 'kitchens';
           } catch (e) {
             // Assign default image URL and log the error
             data['imageUrl'] = defaultImageUrl;
@@ -185,6 +186,33 @@ class Gets {
       return marketsData;
     } catch (e) {
       print('Error fetching kitchens: $e');
+      return [];
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getMarketProducts(
+      {required String market}) async {
+    try {
+      // Retrieve the document snapshot for the specified market
+      QuerySnapshot marketProductsDocument = await _firebaseFirestore
+          .collection('markets')
+          .doc(market)
+          .collection('products')
+          .get();
+
+      List<Map<String, dynamic>> productsData = [];
+      for (var doc in marketProductsDocument.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        productsData.add(data);
+        String imgURL =
+            await _firebaseStorage.ref(data['photo']).getDownloadURL();
+        data['photo'] = imgURL;
+        print('data: $data');
+      }
+
+      return productsData;
+    } catch (e) {
+      print('Error fetching market products: $e');
       return [];
     }
   }

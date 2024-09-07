@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/controllers/user_location.dart';
+import 'package:yolda/pages/market/market-products.dart/products.dart';
 
 class KitchenPage extends StatefulWidget {
   String photo;
@@ -92,7 +93,9 @@ class _KitchenPageState extends State<KitchenPage> {
                   fontSize: 18,
                 )),
             subtitle: Text(
-                "${UserLocation.locality}, ${UserLocation.region.substring(0, UserLocation.region.length - 7)}",
+                "${UserLocation.locality}, ${UserLocation.region
+                // .substring(0, UserLocation.region.length - 7)
+                }",
                 style: TextStyle(
                   fontFamily: 'Josefin Sans',
                   color: const Color(0xff3C486B).withOpacity(.9),
@@ -340,7 +343,14 @@ class _KitchenPageState extends State<KitchenPage> {
   GestureDetector marketMenuItems(
       {required String photo, required String text, required int key}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        print('Kitchen name:  ${widget.kitchenName}');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MarketProducts(market: widget.kitchenName)));
+      },
       child: Column(
         key: ValueKey(key),
         mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,10 +87,25 @@ Future<List<Placemark>> _retryPlacemarkFromCoordinates(
           .timeout(const Duration(seconds: 60));
     } on TimeoutException {
       if (attempt == retries - 1) {
-        rethrow;
+        rethrow; // Rethrow if it's the last attempt
       }
-      print("Retrying reverse geocoding... (attempt ${attempt + 1})");
+      print("Timeout occurred, retrying... (attempt ${attempt + 1})");
+    } on PlatformException catch (e) {
+      if (attempt == retries - 1) {
+        rethrow; // Rethrow if it's the last attempt
+      }
+      print(
+          "PlatformException: ${e.message}. Retrying... (attempt ${attempt + 1})");
+    } catch (e) {
+      // Handle other types of exceptions if necessary
+      if (attempt == retries - 1) {
+        rethrow; // Rethrow if it's the last attempt
+      }
+      print(
+          "An unexpected error occurred: $e. Retrying... (attempt ${attempt + 1})");
     }
+    await Future.delayed(
+        const Duration(seconds: 2)); // Optional delay between retries
   }
   return []; // Return an empty list if all retries fail
 }
