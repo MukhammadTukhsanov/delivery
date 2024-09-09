@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:yolda/controllers/gets.dart';
 
 class MarketProducts extends StatefulWidget {
   String market;
-  MarketProducts({super.key, required this.market});
+  String minOrder;
+  MarketProducts({super.key, required this.market, required this.minOrder});
 
   @override
   State<MarketProducts> createState() => _MarketProductsState();
@@ -12,6 +14,8 @@ class MarketProducts extends StatefulWidget {
 class _MarketProductsState extends State<MarketProducts> {
   String _selectedChip = 'Barchasi';
   List data = [];
+  Map<int, int> productCounts = {}; // Map to store product counts by index
+  double totalPrice = 0.0;
 
   @override
   void initState() {
@@ -21,6 +25,20 @@ class _MarketProductsState extends State<MarketProducts> {
       });
     });
     super.initState();
+  }
+
+  void updateProductCount(int index, int count, double price) {
+    setState(() {
+      // Update the product count
+      productCounts[index] = count;
+
+      // Recalculate the total price
+      totalPrice = 0.0;
+      productCounts.forEach((key, value) {
+        totalPrice +=
+            value * double.parse('${data[key]['price']}'.replaceAll(' ', ''));
+      });
+    });
   }
 
   @override
@@ -64,9 +82,126 @@ class _MarketProductsState extends State<MarketProducts> {
                       ),
                       itemBuilder: (context, index) {
                         var item = data[index];
-                        return ProductItem(item: item, index: index);
+                        return ProductItem(
+                          item: item,
+                          index: index,
+                          productCount: productCounts[index] ?? 0,
+                          onCountChanged: (newCount) {
+                            updateProductCount(
+                                index,
+                                newCount,
+                                double.parse(
+                                    '${item['price']}'.replaceAll(' ', '')));
+                            _showTotalAmount(
+                                context); // Show modal with updated total
+                          },
+                        );
                       },
                     ),
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                              top: BorderSide(
+                                  color: Color(0xff3c486b).withOpacity(.3),
+                                  width: 2))),
+                      width: MediaQuery.sizeOf(context).width,
+                      height: 200,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/img/discount.png',
+                                  width: 22,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '${widget.minOrder} So\'mdan keyin bepul yekzip beriladi',
+                                  style: const TextStyle(
+                                      fontFamily: 'Josefin Sans',
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xff3c486b),
+                                      fontSize: 15),
+                                )
+                              ]),
+                          const SizedBox(height: 16),
+                          // Text(
+                          //   'Total price: ${totalPrice.toStringAsFixed(2)} So\'m',
+                          //   style: const TextStyle(
+                          //     fontSize: 16,
+                          //     fontWeight: FontWeight.w500,
+                          //   ),
+                          // ),
+                          const SizedBox(height: 8),
+                          LinearProgressIndicator(
+                            borderRadius: BorderRadius.circular(10),
+                            value: .2,
+                            color: Color.fromARGB(255, 237, 117, 47),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.orange,
+                            ),
+                            // onPressed: () {
+                            //   // Button click action
+                            //   print("Button Pressed");
+                            // },
+                            child: Stack(
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 26,
+                                  height: 26,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.white),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: const Text(
+                                    '1',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xffffffff),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const Text(
+                                  'Savatingizni ko\'ring',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const Text(
+                                  '10 000 So\'m',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // ElevatedButton(
+                            //   style: ButtonStyle(),
+                            //   onPressed: () {
+                            //     Navigator.pop(context); // Close modal
+                            //   },
+                            //   child: const Text('Close'),
+                            // ),
+                          )
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -113,6 +248,50 @@ class _MarketProductsState extends State<MarketProducts> {
     );
   }
 
+  void _showTotalAmount(BuildContext context) {
+    Scaffold.of(context).showBottomSheet(
+      enableDrag: false,
+      (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                  top: BorderSide(
+                      color: Color(0xff3c486b).withOpacity(.3), width: 2))),
+          width: MediaQuery.sizeOf(context).width,
+          height: 200,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Total Amount',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Total price: ${totalPrice.toStringAsFixed(2)} So\'m',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close modal
+                },
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _selectChip(String label) {
     setState(() {
       _selectedChip = label;
@@ -121,17 +300,24 @@ class _MarketProductsState extends State<MarketProducts> {
 }
 
 class ProductItem extends StatefulWidget {
-  ProductItem({super.key, required this.item, required this.index});
+  final dynamic item;
+  final int index;
+  final int productCount; // Current count of the product
+  final Function(int) onCountChanged; // Callback to update count in the parent
 
-  dynamic item;
-  int index;
+  ProductItem({
+    super.key,
+    required this.item,
+    required this.index,
+    required this.productCount,
+    required this.onCountChanged,
+  });
 
   @override
   State<ProductItem> createState() => _ProductItemState();
 }
 
 class _ProductItemState extends State<ProductItem> {
-  int countOfProduct = 0;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -144,7 +330,9 @@ class _ProductItemState extends State<ProductItem> {
           height: 160,
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: NetworkImage(widget.item['photo']), fit: BoxFit.contain),
+              image: NetworkImage(widget.item['photo']),
+              fit: BoxFit.contain,
+            ),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: const Color(0xff3c486b).withOpacity(.2),
@@ -156,7 +344,7 @@ class _ProductItemState extends State<ProductItem> {
                 right: 6,
                 bottom: 6,
                 child: Container(
-                  padding: const EdgeInsets.all(7),
+                  padding: EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -169,32 +357,47 @@ class _ProductItemState extends State<ProductItem> {
                     ],
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  // width: 30,
                   height: 30,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      countOfProduct != 0
-                          ? Image.asset('assets/img/trash.png')
-                          : SizedBox(),
-                      countOfProduct != 0
-                          ? Text(
-                              '$countOfProduct',
-                              overflow: TextOverflow.visible,
-                              style: TextStyle(
-                                  color: Color(0xff3c486b),
-                                  fontSize: 18,
-                                  fontFamily: 'Josefin Sans'),
+                      widget.productCount != 0
+                          ? GestureDetector(
+                              onTap: () {
+                                if (widget.productCount > 0) {
+                                  widget
+                                      .onCountChanged(widget.productCount - 1);
+                                }
+                              },
+                              child: Image.asset('assets/img/trash.png',
+                                  width: 18, height: 18, scale: 1))
+                          : const SizedBox(),
+                      widget.productCount != 0
+                          ? SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: Center(
+                                child: Text(
+                                  textAlign: TextAlign.center,
+                                  '${widget.productCount}',
+                                  overflow: TextOverflow.visible,
+                                  style: const TextStyle(
+                                      color: Color(0xff3c486b),
+                                      fontFamily: 'Josefin Sans',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             )
                           : SizedBox(),
                       GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              countOfProduct++;
-                            });
-                          },
-                          child: Image.asset('assets/img/plus.png')),
+                        onTap: () {
+                          widget.onCountChanged(widget.productCount + 1);
+                        },
+                        child: Image.asset('assets/img/plus.png',
+                            scale: 1, width: 18, height: 18),
+                      ),
                     ],
                   ),
                 ),
@@ -217,8 +420,7 @@ class _ProductItemState extends State<ProductItem> {
           builder: (context, constraints) {
             return Text.rich(
               TextSpan(
-                text:
-                    '${widget.item['name']}${widget.item['name']}${widget.item['name']}${widget.item['name']}${widget.item['name']}',
+                text: '${widget.item['name']}',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xff3c486b).withOpacity(.7),

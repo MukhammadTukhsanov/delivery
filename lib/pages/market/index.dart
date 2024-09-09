@@ -344,12 +344,11 @@ class _KitchenPageState extends State<KitchenPage> {
       {required String photo, required String text, required int key}) {
     return GestureDetector(
       onTap: () {
-        print('Kitchen name:  ${widget.kitchenName}');
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    MarketProducts(market: widget.kitchenName)));
+                builder: (context) => MarketProducts(
+                    market: widget.kitchenName, minOrder: widget.minOrder)));
       },
       child: Column(
         key: ValueKey(key),
