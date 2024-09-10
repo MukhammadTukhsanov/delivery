@@ -16,6 +16,7 @@ class _MarketProductsState extends State<MarketProducts> {
   List data = [];
   Map<int, int> productCounts = {}; // Map to store product counts by index
   double totalPrice = 0.0;
+  int basketProductNumber = 0;
 
   @override
   void initState() {
@@ -34,7 +35,9 @@ class _MarketProductsState extends State<MarketProducts> {
 
       // Recalculate the total price
       totalPrice = 0.0;
+      basketProductNumber = 0;
       productCounts.forEach((key, value) {
+        basketProductNumber += value;
         totalPrice +=
             value * double.parse('${data[key]['price']}'.replaceAll(' ', ''));
       });
@@ -54,160 +57,191 @@ class _MarketProductsState extends State<MarketProducts> {
           ),
           centerTitle: false,
         ),
-        body: Column(
-          children: [
-            headerMenu(),
-            const Divider(height: 1),
-            Expanded(
+        body: Column(children: [
+          headerMenu(),
+          const Divider(height: 1),
+          Expanded(
               // Use Expanded to take the remaining screen height
               child: SingleChildScrollView(
-                // Allow the entire page to scroll
+                  // Allow the entire page to scroll
+                  child: Column(children: [
+            GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: data.length,
+              shrinkWrap:
+                  true, // Important to make the GridView take only needed space
+              physics:
+                  const NeverScrollableScrollPhysics(), // Disable GridView scrolling
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio:
+                    0.76, // Adjust the aspect ratio to make items fit better
+              ),
+              itemBuilder: (context, index) {
+                var item = data[index];
+                return ProductItem(
+                  item: item,
+                  index: index,
+                  productCount: productCounts[index] ?? 0,
+                  onCountChanged: (newCount) {
+                    updateProductCount(index, newCount,
+                        double.parse('${item['price']}'.replaceAll(' ', '')));
+                    _showTotalAmount(context); // Show modal with updated total
+                  },
+                );
+              },
+            ),
+            Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                        top: BorderSide(
+                            color: Color(0xff3c486b).withOpacity(.3),
+                            width: 2))),
+                width: MediaQuery.sizeOf(context).width,
+                height: 200,
                 child: Column(
-                  children: [
-                    GridView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      itemCount: data.length,
-                      shrinkWrap:
-                          true, // Important to make the GridView take only needed space
-                      physics:
-                          const NeverScrollableScrollPhysics(), // Disable GridView scrolling
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio:
-                            0.76, // Adjust the aspect ratio to make items fit better
-                      ),
-                      itemBuilder: (context, index) {
-                        var item = data[index];
-                        return ProductItem(
-                          item: item,
-                          index: index,
-                          productCount: productCounts[index] ?? 0,
-                          onCountChanged: (newCount) {
-                            updateProductCount(
-                                index,
-                                newCount,
-                                double.parse(
-                                    '${item['price']}'.replaceAll(' ', '')));
-                            _showTotalAmount(
-                                context); // Show modal with updated total
-                          },
-                        );
-                      },
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border(
-                              top: BorderSide(
-                                  color: Color(0xff3c486b).withOpacity(.3),
-                                  width: 2))),
-                      width: MediaQuery.sizeOf(context).width,
-                      height: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      double.parse(widget.minOrder.replaceAll(' ', '')) -
+                                  totalPrice <
+                              0
+                          ? Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Image.asset(
-                                  'assets/img/discount.png',
-                                  width: 22,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '${widget.minOrder} So\'mdan keyin bepul yekzip beriladi',
-                                  style: const TextStyle(
-                                      fontFamily: 'Josefin Sans',
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xff3c486b),
-                                      fontSize: 15),
-                                )
-                              ]),
-                          const SizedBox(height: 16),
-                          // Text(
-                          //   'Total price: ${totalPrice.toStringAsFixed(2)} So\'m',
-                          //   style: const TextStyle(
-                          //     fontSize: 16,
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
-                          const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            borderRadius: BorderRadius.circular(10),
-                            value: .2,
-                            color: Color.fromARGB(255, 237, 117, 47),
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.orange,
-                            ),
-                            // onPressed: () {
-                            //   // Button click action
-                            //   print("Button Pressed");
-                            // },
-                            child: Stack(
-                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  Image.asset(
+                                    'assets/img/chesk.png',
+                                    width: 22,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${formatNumber(double.parse(widget.minOrder.replaceAll(' ', '')) - totalPrice)} So\'mdan keyin bepul yekzip beriladi',
+                                    style: const TextStyle(
+                                        fontFamily: 'Josefin Sans',
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xff3c486b),
+                                        fontSize: 15),
+                                  )
+                                ])
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Container(
-                                  width: 26,
-                                  height: 26,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 1, color: Colors.white),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: const Text(
-                                    '1',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xffffffff),
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  Image.asset(
+                                    'assets/img/discount.png',
+                                    width: 22,
                                   ),
-                                ),
-                                const Text(
-                                  'Savatingizni ko\'ring',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const Text(
-                                  '10 000 So\'m',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // ElevatedButton(
-                            //   style: ButtonStyle(),
-                            //   onPressed: () {
-                            //     Navigator.pop(context); // Close modal
-                            //   },
-                            //   child: const Text('Close'),
-                            // ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${formatNumber(double.parse(widget.minOrder.replaceAll(' ', '')) - totalPrice)} So\'mdan keyin bepul yekzip beriladi',
+                                    style: const TextStyle(
+                                        fontFamily: 'Josefin Sans',
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xff3c486b),
+                                        fontSize: 15),
+                                  )
+                                ]),
+                      const SizedBox(height: 16),
+                      // Text(
+                      //   'Total price: ${totalPrice.toStringAsFixed(2)} So\'m',
+                      //   style: const TextStyle(
+                      //     fontSize: 16,
+                      //     fontWeight: FontWeight.w500,
+                      //   ),
+                      // ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                          borderRadius: BorderRadius.circular(10),
+                          value: (totalPrice *
+                                  100 /
+                                  double.parse(
+                                      widget.minOrder.replaceAll(' ', ''))) /
+                              100,
+                          color: const Color(0xffff9556)),
+                      const SizedBox(height: 16),
+                      Container(
+                          width: MediaQuery.sizeOf(context).width,
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.orange),
+                          // onPressed: () {
+                          //   // Button click action
+                          //   print("Button Pressed");
+                          // },
+                          child: Stack(children: [
+                            Positioned(
+                                child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1, color: Colors.white),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Text('$basketProductNumber',
+                                        style: const TextStyle(
+                                            fontSize: 13,
+                                            color: Color(0xffffffff),
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Josefin Sans')))),
+                            const Positioned(
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                    child: Text('Savatingizni ko\'ring',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Josefin Sans')))),
+                            Positioned(
+                                right: 0,
+                                top: 0,
+                                bottom: 0,
+                                child: Center(
+                                    child: Text(
+                                        '${formatNumber(totalPrice)} So\'m',
+                                        style: const TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Josefin Sans'))))
+                          ])
+                          // ElevatedButton(
+                          //   style: ButtonStyle(),
+                          //   onPressed: () {
+                          //     Navigator.pop(context); // Close modal
+                          //   },
+                          //   child: const Text('Close'),
+                          // ),
                           )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ));
+                    ]))
+          ])))
+        ]));
+  }
+
+  String formatNumber(double number) {
+    // Convert to string without decimal places
+    String numberString = number.toStringAsFixed(0);
+    StringBuffer result = StringBuffer();
+    int count = 0;
+
+    // Loop through the string in reverse
+    for (int i = numberString.length - 1; i >= 0; i--) {
+      count++;
+      result.write(numberString[i]);
+      // Add a space every 3 digits
+      if (count % 3 == 0 && i != 0) {
+        result.write(' ');
+      }
+    }
+
+    // Reverse the result to get the correct format
+    return result.toString().split('').reversed.join('');
   }
 
   Padding headerMenu() {
@@ -370,8 +404,12 @@ class _ProductItemState extends State<ProductItem> {
                                       .onCountChanged(widget.productCount - 1);
                                 }
                               },
-                              child: Image.asset('assets/img/trash.png',
-                                  width: 18, height: 18, scale: 1))
+                              child: SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: Image.asset('assets/img/trash.png',
+                                    width: 18, height: 18, scale: 1),
+                              ))
                           : const SizedBox(),
                       widget.productCount != 0
                           ? SizedBox(
@@ -395,8 +433,12 @@ class _ProductItemState extends State<ProductItem> {
                         onTap: () {
                           widget.onCountChanged(widget.productCount + 1);
                         },
-                        child: Image.asset('assets/img/plus.png',
-                            scale: 1, width: 18, height: 18),
+                        child: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: Image.asset('assets/img/plus.png',
+                              scale: 1, width: 18, height: 18),
+                        ),
                       ),
                     ],
                   ),
@@ -423,13 +465,13 @@ class _ProductItemState extends State<ProductItem> {
                 text: '${widget.item['name']}',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xff3c486b).withOpacity(.7),
+                  color: const Color(0xff3c486b).withOpacity(.7),
                 ),
                 children: [
                   TextSpan(
                     text:
                         ' ${widget.item['measurement-value']} ${widget.item['unit-of-measure']}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

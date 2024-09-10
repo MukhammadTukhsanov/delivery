@@ -3,7 +3,7 @@ import 'package:yolda/controllers/user_location.dart';
 import 'package:yolda/pages/home/list_title.dart';
 
 class Category extends StatefulWidget {
-  const Category({Key? key}) : super(key: key);
+  const Category({super.key});
 
   @override
   _CategoryState createState() => _CategoryState();
@@ -77,6 +77,7 @@ class _CategoryState extends State<Category> {
                     int index = entry.key;
                     var e = entry.value;
                     return GestureDetector(
+                      key: ValueKey(index),
                       onTap: () => _navigateToScreen(e['text']),
                       child: Column(
                         children: [

@@ -3,34 +3,33 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'user_location.dart'; // Import your UserLocation class
 
 Future<Set<double?>> locationService() async {
   final loc.Location location = loc.Location();
-  bool _serviceEnabled;
-  loc.PermissionStatus _permissionLocation;
-  loc.LocationData _locData;
+  bool serviceEnabled;
+  loc.PermissionStatus permissionLocation;
+  loc.LocationData locData;
 
   try {
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
         return {};
       }
     }
 
-    _permissionLocation = await location.hasPermission();
-    if (_permissionLocation == loc.PermissionStatus.denied) {
-      _permissionLocation = await location.requestPermission();
-      if (_permissionLocation != loc.PermissionStatus.granted) {
+    permissionLocation = await location.hasPermission();
+    if (permissionLocation == loc.PermissionStatus.denied) {
+      permissionLocation = await location.requestPermission();
+      if (permissionLocation != loc.PermissionStatus.granted) {
         return {};
       }
     }
 
-    _locData = await location.getLocation();
-    return {_locData.latitude, _locData.longitude};
+    locData = await location.getLocation();
+    return {locData.latitude, locData.longitude};
   } catch (e) {
     print("Error retrieving location: $e");
     return {};
@@ -40,7 +39,7 @@ Future<Set<double?>> locationService() async {
 Future<void> getUserLocation() async {
   try {
     final locationData = await locationService();
-    if (locationData == null || locationData.isEmpty) {
+    if (locationData.isEmpty) {
       print("Location data is not available.");
       return;
     }

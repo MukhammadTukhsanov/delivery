@@ -23,8 +23,7 @@ class Gets {
 
       for (String orderId in orders) {
         final docSnapshot = await lastOrdersCollection.doc(orderId).get();
-        Map<String, dynamic> data =
-            docSnapshot.data() as Map<String, dynamic>? ?? {};
+        Map<String, dynamic> data = docSnapshot.data() ?? {};
 
         String? imagePath = data['photo'] as String?;
         if (imagePath != null && imagePath.isNotEmpty) {
@@ -113,7 +112,6 @@ class Gets {
 
   static Future<List<Map<String, dynamic>>> getMenu(
       {required String kitchen, required String filter}) async {
-    print('getting menu: ${kitchen}');
     final menuCollection = FirebaseFirestore.instance
         .collection(filter)
         .doc(kitchen)
@@ -124,14 +122,13 @@ class Gets {
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data();
         String imagePath = data["photo"];
-        if (imagePath != null && imagePath.isNotEmpty) {
+        if (imagePath.isNotEmpty) {
           String imageURL =
               await _firebaseStorage.ref(imagePath).getDownloadURL();
           data['imageUrl'] = imageURL;
         }
         final ingredients =
             menuCollection.doc(doc.id).collection('ingredients');
-        List<Map<String, dynamic>> ingredientsData = [];
         if (filter != 'markets') {
           try {
             final ingredientsSnapshot = await ingredients.get();
@@ -207,9 +204,7 @@ class Gets {
         String imgURL =
             await _firebaseStorage.ref(data['photo']).getDownloadURL();
         data['photo'] = imgURL;
-        print('data: $data');
       }
-
       return productsData;
     } catch (e) {
       print('Error fetching market products: $e');
