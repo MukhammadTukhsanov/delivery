@@ -59,7 +59,7 @@ class _KitchenPageState extends State<KitchenPage> {
   }
 
   var meniItems = [
-    {'text': 'Ko\'p sotilganlar', 'photo': 'markets.png'},
+    {'text': 'Barchasi', 'photo': 'markets.png'},
     {'text': 'Meva va sabzavotlar', 'photo': 'fruitsAndVeggies.png'},
     {'text': 'Ichimliklar', 'photo': 'drinks.png'},
     {'text': 'Go\'sht mahsulotlari', 'photo': 'meat-products.png'},
@@ -348,7 +348,10 @@ class _KitchenPageState extends State<KitchenPage> {
             context,
             MaterialPageRoute(
                 builder: (context) => MarketProducts(
-                    market: widget.kitchenName, minOrder: widget.minOrder)));
+                    market: widget.kitchenName,
+                    minOrder: widget.minOrder,
+                    activeMenu: text,
+                    afterFree: widget.afterFree)));
       },
       child: Column(
         key: ValueKey(key),
