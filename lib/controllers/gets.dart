@@ -39,6 +39,7 @@ class Gets {
           }
         }
         data['kitchenName'] = docSnapshot.id;
+        print("data: $data");
         lastKitchensData.add(data);
       }
       return lastKitchensData;
