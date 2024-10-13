@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:yolda/controllers/gets.dart';
@@ -48,7 +51,13 @@ class _MarketProductsState extends State<MarketProducts> {
 
     Gets.getMarketProducts(market: widget.market).then((gets) {
       setState(() {
-        data = gets;
+        // Add an index to every item in the gets list
+        data = gets.asMap().entries.map((entry) {
+          final index = entry.key;
+          final item = entry.value;
+          return {...item, 'index': index}; // Add the index to the item
+        }).toList();
+
         filter(widget.activeMenu); // Call filter here directly
       });
     });
@@ -85,23 +94,55 @@ class _MarketProductsState extends State<MarketProducts> {
         // Scroll to the calculated position
         _scrollController.animateTo(
           position,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       }
     }
   }
 
-  void updateProductCount(int index, int count, double price) {
-    if (count < 0) return; // Prevent negative counts
+  List basketItems = [];
+
+  void checkBasket(Map<String, dynamic> itemForCheck, int _count) {
+    bool itemFound = false;
+
+    for (var basketItem in basketItems) {
+      if (basketItem['name'] == itemForCheck["name"]) {
+        itemFound = true; // Item exists in basket
+
+        if (_count > 0) {
+          setState(() {
+            basketItem["count"] = _count; // Update count
+          });
+        } else {
+          setState(() {
+            basketItems.remove(basketItem); // Remove item if count is 0
+          });
+        }
+        break; // Exit loop after handling the item
+      }
+    }
+
+    // If the item was not found in the basket, add it
+    if (!itemFound && _count > 0) {
+      setState(() {
+        basketItems.add({...itemForCheck, "count": _count});
+      });
+    }
+
+    print("basketItems: $basketItems");
+  }
+
+  void updateProductCount(int index, int count, double price, item) {
+    checkBasket(item, count);
 
     setState(() {
+      print("count: $count");
       if (count == 0) {
         productCounts.remove(index); // Remove the product if the count is zero
       } else {
         productCounts[index] = count; // Update the count
       }
-
       // Recalculate the total price based on product counts
       totalPrice = productCounts.entries.fold(0.0, (sum, entry) {
         return sum +
@@ -178,15 +219,22 @@ class _MarketProductsState extends State<MarketProducts> {
                 childAspectRatio: 0.76,
               ),
               itemBuilder: (context, index) {
-                var item = filteredData[index];
+                // Add index here
+                var item = filteredData[
+                    index]; // Now you can use index to access each item
                 return ProductItem(
                   key: ValueKey(index),
                   item: item,
-                  index: index,
-                  productCount: productCounts[index] ?? 0,
+                  index: item["index"], // Pass the index from the item
+                  productCount: productCounts[item['index']] ??
+                      0, // Use index to track product count
                   onCountChanged: (newCount) {
-                    updateProductCount(index, newCount,
-                        double.parse('${item['price']}'.replaceAll(' ', '')));
+                    updateProductCount(
+                      item['index'],
+                      newCount,
+                      double.parse('${item['price']}'.replaceAll(' ', '')),
+                      item,
+                    );
                   },
                 );
               },
