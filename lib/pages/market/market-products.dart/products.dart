@@ -1,7 +1,3 @@
-import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/pages/basket/basket.dart';
@@ -27,7 +23,7 @@ class MarketProducts extends StatefulWidget {
 class _MarketProductsState extends State<MarketProducts> {
   List data = [];
   List<dynamic> filteredData = [];
-  Map<int, int> productCounts = {}; // Map to store product counts by index
+  Map productCounts = {}; // Map to store product counts by index
   double totalPrice = 0.0;
   int basketProductNumber = 0;
   bool totalAmountIsShowed = false;
@@ -35,6 +31,7 @@ class _MarketProductsState extends State<MarketProducts> {
   String _selectedChip = '';
   final ScrollController _scrollController = ScrollController();
   final List<GlobalKey> _chipKeys = [];
+  List backetItems = [];
 
   @override
   void initState() {
@@ -101,62 +98,62 @@ class _MarketProductsState extends State<MarketProducts> {
     }
   }
 
-  List basketItems = [];
+  void updateProductCounts() {
+    // Create a list to store items that need to be removed
+    List<dynamic> itemsToRemove = [];
 
-  void checkBasket(Map<String, dynamic> itemForCheck, int _count) {
-    bool itemFound = false;
-
-    for (var basketItem in basketItems) {
-      if (basketItem['name'] == itemForCheck["name"]) {
-        itemFound = true; // Item exists in basket
-
-        if (_count > 0) {
-          setState(() {
-            basketItem["count"] = _count; // Update count
-          });
-        } else {
-          setState(() {
-            basketItems.remove(basketItem); // Remove item if count is 0
-          });
-        }
-        break; // Exit loop after handling the item
+    for (var backetItem in backetItems) {
+      // Check if the count is zero
+      if (backetItem["count"] == 0) {
+        itemsToRemove.add(backetItem);
+      } else {
+        // Update the productCounts for items with non-zero counts
+        setState(() {
+          productCounts[backetItem["item"]["index"]] = backetItem["count"];
+        });
       }
     }
 
-    // If the item was not found in the basket, add it
-    if (!itemFound && _count > 0) {
-      setState(() {
-        basketItems.add({...itemForCheck, "count": _count});
-      });
-    }
+    // Remove the items with zero counts after the loop
+    setState(() {
+      for (var item in itemsToRemove) {
+        backetItems.remove(item);
+        productCounts.remove(item["item"]["index"]);
+      }
+    });
+    // Recalculate the total price based on product counts
+    totalPrice = productCounts.entries.fold(0.0, (sum, entry) {
+      return sum +
+          entry.value *
+              double.parse('${data[entry.key]['price']}'.replaceAll(' ', ''));
+    });
 
-    print("basketItems: $basketItems");
+    //   // Recalculate the total number of items in the basket
+    basketProductNumber =
+        productCounts.values.fold(0, (sum, value) => value + sum);
+
+    // Show totalAmount only if there are products in the basket
+    totalAmountIsShowed = basketProductNumber > 0;
   }
 
   void updateProductCount(int index, int count, double price, item) {
-    checkBasket(item, count);
+    var searchItem = backetItems.indexWhere((element) {
+      return element['item'] == item;
+    });
 
     setState(() {
-      print("count: $count");
-      if (count == 0) {
-        productCounts.remove(index); // Remove the product if the count is zero
+      if (searchItem != -1) {
+        // Update the count of the existing item
+        backetItems[searchItem]["count"] = count;
       } else {
-        productCounts[index] = count; // Update the count
+        // Add new item to the basket
+        backetItems.add({"count": count, "item": item});
       }
-      // Recalculate the total price based on product counts
-      totalPrice = productCounts.entries.fold(0.0, (sum, entry) {
-        return sum +
-            entry.value *
-                double.parse('${data[entry.key]['price']}'.replaceAll(' ', ''));
-      });
-
-      // Recalculate the total number of items in the basket
-      basketProductNumber =
-          productCounts.values.fold(0, (sum, value) => sum + value);
-
-      // Show totalAmount only if there are products in the basket
-      totalAmountIsShowed = basketProductNumber > 0;
     });
+
+    // Update the product counts after updating backetItems
+    updateProductCounts();
+    print("backetItems: $backetItems");
   }
 
   var meniItems = [
@@ -353,9 +350,22 @@ class _MarketProductsState extends State<MarketProducts> {
           ),
           const SizedBox(height: 24),
           GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Basket()));
+            onTap: () async {
+              final updatedBasket = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Basket(backetData: backetItems),
+                ),
+              );
+
+              // Check if updatedBasket is not null and update the state
+              if (updatedBasket != null) {
+                setState(() {
+                  backetItems =
+                      updatedBasket; // Update basketItems with the returned data
+                });
+                updateProductCounts();
+              }
             },
             child: Container(
               width: MediaQuery.sizeOf(context).width,
