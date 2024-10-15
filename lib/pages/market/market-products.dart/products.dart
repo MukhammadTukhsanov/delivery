@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yolda/controllers/gets.dart';
+import 'package:yolda/global/global.dart';
 import 'package:yolda/pages/basket/basket.dart';
 import 'package:yolda/pages/market/market-products.dart/choice-chip.dart';
 import 'package:yolda/pages/market/market-products.dart/product-item.dart';
@@ -187,6 +188,7 @@ class _MarketProductsState extends State<MarketProducts> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         elevation: 0,
         title: Text(
           _selectedChip,
@@ -248,26 +250,6 @@ class _MarketProductsState extends State<MarketProducts> {
         ],
       ),
     );
-  }
-
-  String formatNumber(double number) {
-    // Convert to string without decimal places
-    String numberString = number.toStringAsFixed(0);
-    StringBuffer result = StringBuffer();
-    int count = 0;
-
-    // Loop through the string in reverse
-    for (int i = numberString.length - 1; i >= 0; i--) {
-      count++;
-      result.write(numberString[i]);
-      // Add a space every 3 digits
-      if (count % 3 == 0 && i != 0) {
-        result.write(' ');
-      }
-    }
-
-    // Reverse the result to get the correct format
-    return result.toString().split('').reversed.join('');
   }
 
   SingleChildScrollView headerMenu() {
@@ -354,7 +336,12 @@ class _MarketProductsState extends State<MarketProducts> {
               final updatedBasket = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Basket(backetData: backetItems),
+                  builder: (context) => Basket(
+                      backetData: backetItems,
+                      deliveryPrice: totalPrice >=
+                              double.parse(widget.afterFree.replaceAll(' ', ''))
+                          ? 0
+                          : double.parse(widget.afterFree.replaceAll(' ', ''))),
                 ),
               );
 
