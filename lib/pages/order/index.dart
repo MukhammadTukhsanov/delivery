@@ -1,10 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:yolda/controllers/user_location.dart';
 import 'package:yolda/global/global.dart';
 
 class Order extends StatefulWidget {
-  final backetData;
+  final List backetData;
   final deliveryPrice;
   final basketItemsPrice;
   const Order(
@@ -18,19 +19,17 @@ class Order extends StatefulWidget {
 }
 
 class _OrderState extends State<Order> {
-  TextEditingController _adressController = TextEditingController(
+  final TextEditingController _adressController = TextEditingController(
       text: "${UserLocation.street}, ${UserLocation.place}");
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print(widget.backetData);
+    print("backet data: ${widget.backetData}");
     print(widget.deliveryPrice);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -164,6 +163,32 @@ class _OrderState extends State<Order> {
                         ),
                       )),
                     ],
+                  ),
+                  SizedBox(height: 24),
+                  Text(
+                    "Maxsulotlar ro'yxati",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontFamily: "Josefin Sans",
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xff3c486b).withOpacity(.7)),
+                  ),
+                  Column(
+                    children: [
+                      ...widget.backetData.asMap().entries.map((entrie) {
+                        var e = entrie.value;
+                        int index = entrie.key;
+                        return DottedLineText(
+                          key: ValueKey(index),
+                          leftText:
+                              "${e['item']['name']} * ${e["count"]} ${e["item"]["unit-of-measure"]}",
+                          rightText: formatNumber(e["count"] *
+                              double.parse(
+                                  "${e["item"]["price"]}".replaceAll(" ", ""))),
+                        );
+                      })
+                    ],
                   )
                 ],
               ),
@@ -227,7 +252,11 @@ class _OrderState extends State<Order> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "${formatNumber(double.parse(widget.basketItemsPrice.toString().replaceAll(" ", "")) + widget.deliveryPrice)}",
+                                  formatNumber(double.parse(widget
+                                          .basketItemsPrice
+                                          .toString()
+                                          .replaceAll(" ", "")) +
+                                      widget.deliveryPrice),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontFamily: "Josefin Sans",
@@ -283,5 +312,75 @@ class _OrderState extends State<Order> {
                     )),
               ))
         ]));
+  }
+}
+
+class DottedLineText extends StatelessWidget {
+  final String leftText;
+  final String rightText;
+  final ValueKey? key;
+
+  const DottedLineText(
+      {required this.leftText, required this.rightText, this.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        key: key,
+        children: [
+          // Left text with flexible width
+          Text(
+            leftText,
+            overflow: TextOverflow.ellipsis, // Ellipsis to prevent overflow
+            style: const TextStyle(
+                fontFamily: "Josefin Sans",
+                fontWeight: FontWeight.w600,
+                color: Color(0xff3c486b),
+                fontSize: 18),
+          ),
+          const SizedBox(
+              width: 10), // Optional space between left text and dots
+
+          // Dots section
+          Flexible(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Calculate number of dots based on available width
+                int dotCount = (constraints.maxWidth / 8)
+                    .floor(); // Estimate 8px per dot including padding
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center, // Center dots
+                  children: List.generate(
+                    dotCount,
+                    (index) => const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 2.0),
+                      child: Text(
+                        '.',
+                        style: TextStyle(color: Color(0xff3c486b)),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(
+              width: 10), // Optional space between dots and right text
+
+          // Right text with flexible width
+          Text(
+            rightText,
+            overflow: TextOverflow.ellipsis, // Ellipsis to prevent overflow
+            style: const TextStyle(
+                fontFamily: "Josefin Sans",
+                fontWeight: FontWeight.w600,
+                color: Color(0xff3c486b),
+                fontSize: 18),
+          ),
+        ],
+      ),
+    );
   }
 }

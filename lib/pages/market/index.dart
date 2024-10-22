@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -34,6 +36,7 @@ class KitchenPage extends StatefulWidget {
 class _KitchenPageState extends State<KitchenPage> {
   String ingredientsText = '';
   List<Map<String, dynamic>> data = [];
+  Map<int, int> productCountMap = {};
   @override
   void initState() {
     super.initState();
@@ -45,7 +48,6 @@ class _KitchenPageState extends State<KitchenPage> {
       List<Map<String, dynamic>> fetchedData = await Gets.getMenu(
           kitchen: widget.kitchenName, filter: widget.filter);
       setState(() {
-        print('feched data: $fetchedData');
         data = fetchedData;
       });
     } catch (e) {
@@ -53,9 +55,11 @@ class _KitchenPageState extends State<KitchenPage> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  // Method to set the product count for a specific product ID
+  void setProductCount(int id, int count) {
+    setState(() {
+      productCountMap[id] = count;
+    });
   }
 
   var meniItems = [
@@ -229,13 +233,13 @@ class _KitchenPageState extends State<KitchenPage> {
             ...data.asMap().entries.map((e) {
               var item = e.value;
               int index = e.key;
-              print('item: $e');
               return kitchenMenuItems(
                   key: index,
                   foodName: item['name'],
                   foodPrice: item['price'],
                   imageURL: item['imageUrl'],
-                  ingredients: item['ingredients'] ?? {});
+                  ingredients: item['ingredients'] ?? {},
+                  productId: index);
             })
           // menuItems()
         ],
@@ -248,10 +252,12 @@ class _KitchenPageState extends State<KitchenPage> {
       required String foodName,
       required String foodPrice,
       required String imageURL,
-      required Map<String, dynamic> ingredients}) {
+      required Map<String, dynamic> ingredients,
+      required int productId}) {
     setState(() {
       ingredientsText = '${ingredients.values.join(', ')}, ';
     });
+    int productCount = productCountMap[productId] ?? 0;
     return Padding(
       key: ValueKey(key),
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -312,25 +318,65 @@ class _KitchenPageState extends State<KitchenPage> {
                     Positioned(
                       right: 6,
                       bottom: 6,
-                      child: GestureDetector(
-                        child: Container(
-                            width: 30,
-                            height: 30,
-                            padding: EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Color(0xff3c486b).withOpacity(.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 0))
-                                ],
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Center(
-                              child: Image.asset('assets/img/plus.png'),
-                            )),
-                      ),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xff3c486b).withOpacity(.4),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                                blurStyle: BlurStyle.outer,
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          height: 30,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                  onTap: () {
+                                    setProductCount(productId,
+                                        (productCountMap[productId] ?? 0) - 1);
+                                  },
+                                  child: SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: Image.asset('assets/img/trash.png',
+                                        width: 18, height: 18, scale: 1),
+                                  )),
+                              SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: Center(
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    '$productCount',
+                                    overflow: TextOverflow.visible,
+                                    style: const TextStyle(
+                                        color: Color(0xff3c486b),
+                                        fontFamily: 'Josefin Sans',
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                  onTap: () {
+                                    setProductCount(productId,
+                                        (productCountMap[productId] ?? 0) + 1);
+                                  },
+                                  child: SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: Image.asset('assets/img/plus.png',
+                                        width: 18, height: 18, scale: 1),
+                                  )),
+                            ],
+                          )),
                     ),
                   ],
                 ))
