@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:yolda/pages/home/home.dart';
+import 'package:yolda/controllers/tabBar.dart';
 import 'package:yolda/pages/registration/login.dart';
 
 class AuthPage extends StatelessWidget {
@@ -16,7 +16,7 @@ class AuthPage extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasData) {
-            return HomePage();
+            return TabBarSeparator();
           } else {
             return const Login();
           }

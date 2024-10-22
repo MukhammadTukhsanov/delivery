@@ -23,10 +23,6 @@ class _CategoryState extends State<Category> {
         () {};
         break;
       case 'Savdo':
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => Category()),
-        // );
         break;
       case 'Kuponlarim':
         () {};

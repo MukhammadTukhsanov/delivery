@@ -78,19 +78,6 @@ class _HomePageState extends State<HomePage> {
                           ItemCard(
                               orders: 'lastOrders',
                               scrollDirection: 'horizontal'),
-                          // const SingleChildScrollView(
-                          //   scrollDirection: Axis.horizontal,
-                          //   child: Padding(
-                          //     padding: EdgeInsets.only(left: 16.0, top: 6),
-                          //     child: Row(
-                          //       mainAxisAlignment: MainAxisAlignment.center,
-                          //       children: [
-                          //         ItemCard(),
-                          //         ItemCard(),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
                           const Divider(),
                           ListTitle(text: 'Oshxonalar'),
                           ItemCard(maxItems: 3, scrollDirection: 'vertical'),

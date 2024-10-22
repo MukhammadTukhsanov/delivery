@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yolda/controllers/auth_service.dart';
+import 'package:yolda/controllers/tabBar.dart';
 import 'package:yolda/pages/home/home.dart';
 import 'package:yolda/pages/registration/registration.dart';
 import 'package:yolda/pages/registration/registration_model.dart';
@@ -55,7 +56,7 @@ class _LoginState extends State<Login> {
         // Navigate to the HomePage and show a success snackbar
         if (mounted) {
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => TabBarSeparator()),
               (Route<dynamic> route) => false);
           AuthService.onLoginSuccess(context, _loginPageControllers[0].text);
 
