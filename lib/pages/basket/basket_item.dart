@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class BacketItem extends StatefulWidget {
+class basketItem extends StatefulWidget {
   final Function() removeItem;
   String photo;
   String name;
@@ -10,7 +10,7 @@ class BacketItem extends StatefulWidget {
   Widget removeCount;
   Widget buildCount;
   int count;
-  BacketItem(
+  basketItem(
       {super.key,
       required this.removeItem,
       required this.photo,
@@ -23,10 +23,10 @@ class BacketItem extends StatefulWidget {
       required this.count});
 
   @override
-  State<BacketItem> createState() => _BacketItemState();
+  State<basketItem> createState() => _basketItemState();
 }
 
-class _BacketItemState extends State<BacketItem> {
+class _basketItemState extends State<basketItem> {
   @override
   Widget build(BuildContext context) {
     return Container(

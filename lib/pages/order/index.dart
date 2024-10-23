@@ -5,12 +5,12 @@ import 'package:yolda/controllers/user_location.dart';
 import 'package:yolda/global/global.dart';
 
 class Order extends StatefulWidget {
-  final List backetData;
+  final List basketData;
   final deliveryPrice;
   final basketItemsPrice;
   const Order(
       {super.key,
-      required this.backetData,
+      required this.basketData,
       required this.deliveryPrice,
       required this.basketItemsPrice});
 
@@ -24,7 +24,7 @@ class _OrderState extends State<Order> {
   @override
   void initState() {
     super.initState();
-    print("backet data: ${widget.backetData}");
+    print("basket data: ${widget.basketData}");
     print(widget.deliveryPrice);
   }
 
@@ -176,7 +176,7 @@ class _OrderState extends State<Order> {
                   ),
                   Column(
                     children: [
-                      ...widget.backetData.asMap().entries.map((entrie) {
+                      ...widget.basketData.asMap().entries.map((entrie) {
                         var e = entrie.value;
                         int index = entrie.key;
                         return DottedLineText(
@@ -197,7 +197,7 @@ class _OrderState extends State<Order> {
           AnimatedContainer(
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeInOut,
-              height: "_sumOfBacket" == '0' ? 0 : 180,
+              height: "_sumOfbasket" == '0' ? 0 : 180,
               child: SingleChildScrollView(
                 child: Container(
                     padding: const EdgeInsets.all(16),
@@ -285,7 +285,7 @@ class _OrderState extends State<Order> {
                             MaterialPageRoute(
                               builder: (context) => Order(
                                   deliveryPrice: widget.deliveryPrice,
-                                  backetData: widget.backetData,
+                                  basketData: widget.basketData,
                                   basketItemsPrice: widget.basketItemsPrice),
                             ),
                           ),

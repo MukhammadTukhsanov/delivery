@@ -1,10 +1,9 @@
 import 'dart:ffi';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/controllers/user_location.dart';
+import 'package:yolda/global/global.dart';
 import 'package:yolda/pages/market/market-products.dart/products.dart';
 
 class KitchenPage extends StatefulWidget {
@@ -110,141 +109,175 @@ class _KitchenPageState extends State<KitchenPage> {
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: Image.network(
-              fit: BoxFit.cover,
-              widget.photo,
-              height: 160,
-              width: double.infinity,
-              excludeFromSemantics: true,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.name,
-                  style: const TextStyle(
-                    fontFamily: 'Josefin Sans',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xff3c486b),
-                  ),
+          Expanded(
+              child: Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Image.network(
+                  fit: BoxFit.cover,
+                  widget.photo,
+                  height: 160,
+                  width: double.infinity,
+                  excludeFromSemantics: true,
                 ),
-                Row(
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("kamida - ${widget.minOrder} So'm", style: _textStyle),
-                  ],
-                ),
-                Row(
-                  children: [
+                    Text(
+                      widget.name,
+                      style: const TextStyle(
+                        fontFamily: 'Josefin Sans',
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff3c486b),
+                      ),
+                    ),
                     Row(
                       children: [
-                        Image.asset('assets/img/clock.png', width: 16),
-                        const SizedBox(width: 6),
-                        Text(
-                            "${widget.minDeliveryTime}-${widget.maxDeliveryTime} min",
+                        Text("kamida - ${widget.minOrder} So'm",
                             style: _textStyle),
                       ],
                     ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff3c486b).withOpacity(.7),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
                     Row(
                       children: [
-                        Image.asset('assets/img/delivery.png', width: 16),
-                        const SizedBox(width: 6),
-                        Text("${widget.deliveryPrice} So'm", style: _textStyle),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  width: MediaQuery.sizeOf(context).width,
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xff3c486b).withOpacity(.1),
-                    border: Border.all(
-                      width: 1,
-                      color: const Color(0xff3c486b).withOpacity(.5),
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/img/discount.png',
-                        width: 20,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          "Tekin yetkazib berish ${widget.afterFree} so'm dan yuqori buyurtmada",
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xff3c486b),
-                            fontFamily: 'Josefin Sans',
-                            fontWeight: FontWeight.w500,
+                        Row(
+                          children: [
+                            Image.asset('assets/img/clock.png', width: 16),
+                            const SizedBox(width: 6),
+                            Text(
+                                "${widget.minDeliveryTime}-${widget.maxDeliveryTime} min",
+                                style: _textStyle),
+                          ],
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: const Color(0xff3c486b).withOpacity(.7),
+                            borderRadius: BorderRadius.circular(4),
                           ),
                         ),
+                        const SizedBox(width: 10),
+                        Row(
+                          children: [
+                            Image.asset('assets/img/delivery.png', width: 16),
+                            const SizedBox(width: 6),
+                            Text("${widget.deliveryPrice} So'm",
+                                style: _textStyle),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      width: MediaQuery.sizeOf(context).width,
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xff3c486b).withOpacity(.1),
+                        border: Border.all(
+                          width: 1,
+                          color: const Color(0xff3c486b).withOpacity(.5),
+                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'assets/img/discount.png',
+                            width: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              "Tekin yetkazib berish ${widget.afterFree} so'm dan yuqori buyurtmada",
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xff3c486b),
+                                fontFamily: 'Josefin Sans',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const Divider(),
+              if (widget.filter == 'markets')
+                Expanded(
+                  child: GridView.count(
+                    addAutomaticKeepAlives: true,
+                    addRepaintBoundaries: true,
+                    addSemanticIndexes: true,
+                    childAspectRatio: 3 / 3.3,
+                    shrinkWrap: true,
+                    crossAxisSpacing: 2,
+                    mainAxisSpacing: 4,
+                    crossAxisCount: 4,
+                    children: [
+                      ...meniItems.asMap().entries.map((e) {
+                        var item = e.value;
+                        int index = e.key;
+                        return marketMenuItems(
+                            photo: item['photo']!,
+                            text: item['text']!,
+                            key: index);
+                      })
                     ],
                   ),
                 )
-              ],
-            ),
-          ),
-          const Divider(),
-          if (widget.filter == 'markets')
-            Expanded(
-              child: GridView.count(
-                addAutomaticKeepAlives: true,
-                addRepaintBoundaries: true,
-                addSemanticIndexes: true,
-                childAspectRatio: 3 / 3.3,
-                shrinkWrap: true,
-                crossAxisSpacing: 2,
-                mainAxisSpacing: 4,
-                crossAxisCount: 4,
-                children: [
-                  ...meniItems.asMap().entries.map((e) {
-                    var item = e.value;
-                    int index = e.key;
-                    return marketMenuItems(
-                        photo: item['photo']!, text: item['text']!, key: index);
-                  })
-                ],
-              ),
-            )
-          else
-            ...data.asMap().entries.map((e) {
-              var item = e.value;
-              int index = e.key;
-              return kitchenMenuItems(
-                  key: index,
-                  foodName: item['name'],
-                  foodPrice: item['price'],
-                  imageURL: item['imageUrl'],
-                  ingredients: item['ingredients'] ?? {},
-                  productId: index);
-            })
-          // menuItems()
+              else
+                ...data.asMap().entries.map((e) {
+                  var item = e.value;
+                  int index = e.key;
+                  return kitchenMenuItems(
+                      key: index,
+                      foodName: item['name'],
+                      foodPrice: item['price'],
+                      imageURL: item['imageUrl'],
+                      ingredients: item['ingredients'] ?? {},
+                      productId: index);
+                })
+              // menuItems()
+            ],
+          )),
+          AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+              height: basket.isEmpty ? 180 : 0,
+              child: SingleChildScrollView(
+                child: _showTotalAmount(),
+              )),
         ],
       )),
     );
+  }
+
+  List basket = [];
+  String basketTotalPrice = '';
+
+  double calculateTotalPrice() {
+    double totalPrice = 0.0;
+
+    for (var item in basket) {
+      // Remove spaces and convert price to double
+      double price = double.parse(item['price'].replaceAll(' ', ''));
+
+      // Add to total: item price * item count
+      totalPrice += price * item['count'];
+    }
+
+    return totalPrice;
   }
 
   Padding kitchenMenuItems(
@@ -257,6 +290,21 @@ class _KitchenPageState extends State<KitchenPage> {
     setState(() {
       ingredientsText = '${ingredients.values.join(', ')}, ';
     });
+    updatebasket(count, {name, price, image}) {
+      int itemIndex = basket.indexWhere((item) => item['name'] == name);
+      if (itemIndex != -1) {
+        setState(() {
+          basket[itemIndex]["count"] = count;
+        });
+      } else {
+        basket.add(
+            {"count": count, "name": name, "price": price, "iamge": image});
+      }
+      setState(() {
+        basketTotalPrice = formatNumber(calculateTotalPrice());
+      });
+    }
+
     int productCount = productCountMap[productId] ?? 0;
     return Padding(
       key: ValueKey(key),
@@ -337,44 +385,101 @@ class _KitchenPageState extends State<KitchenPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 00),
+                                transitionBuilder: (Widget child,
+                                    Animation<double> animation) {
+                                  final inAnimation = Tween<Offset>(
+                                    begin: const Offset(
+                                        1.0, 0.0), // Starts from the right
+                                    end: Offset.zero,
+                                  ).animate(animation);
+
+                                  final outAnimation = Tween<Offset>(
+                                    begin: Offset.zero,
+                                    end: const Offset(
+                                        -1.0, 0.0), // Exits to the left
+                                  ).animate(animation);
+
+                                  return child.key == const ValueKey<int>(1)
+                                      ? SlideTransition(
+                                          position: inAnimation, child: child)
+                                      : SlideTransition(
+                                          position: outAnimation, child: child);
+                                },
+                                child: productCount > 0
+                                    ? Row(
+                                        key: const ValueKey<int>(
+                                            1), // Unique key to track changes
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              setProductCount(
+                                                  productId,
+                                                  (productCountMap[productId] ??
+                                                          0) -
+                                                      1);
+                                              updatebasket(
+                                                  productCountMap[productId],
+                                                  name: foodName,
+                                                  price: foodPrice,
+                                                  image: imageURL);
+                                            },
+                                            child: SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: Image.asset(
+                                                'assets/img/trash.png',
+                                                width: 18,
+                                                height: 18,
+                                                scale: 1,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: Center(
+                                              child: Text(
+                                                '$productCount',
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.visible,
+                                                style: const TextStyle(
+                                                  color: Color(0xff3c486b),
+                                                  fontFamily: 'Josefin Sans',
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox(
+                                        key: ValueKey<int>(
+                                            0), // Unique key to track changes
+                                      ),
+                              ),
                               GestureDetector(
-                                  onTap: () {
-                                    setProductCount(productId,
-                                        (productCountMap[productId] ?? 0) - 1);
-                                  },
-                                  child: SizedBox(
+                                onTap: () {
+                                  setProductCount(productId,
+                                      (productCountMap[productId] ?? 0) + 1);
+                                  updatebasket(productCountMap[productId],
+                                      name: foodName,
+                                      price: foodPrice,
+                                      image: imageURL);
+                                },
+                                child: SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: Image.asset(
+                                    'assets/img/plus.png',
                                     width: 18,
                                     height: 18,
-                                    child: Image.asset('assets/img/trash.png',
-                                        width: 18, height: 18, scale: 1),
-                                  )),
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: Center(
-                                  child: Text(
-                                    textAlign: TextAlign.center,
-                                    '$productCount',
-                                    overflow: TextOverflow.visible,
-                                    style: const TextStyle(
-                                        color: Color(0xff3c486b),
-                                        fontFamily: 'Josefin Sans',
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                    scale: 1,
                                   ),
                                 ),
                               ),
-                              GestureDetector(
-                                  onTap: () {
-                                    setProductCount(productId,
-                                        (productCountMap[productId] ?? 0) + 1);
-                                  },
-                                  child: SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: Image.asset('assets/img/plus.png',
-                                        width: 18, height: 18, scale: 1),
-                                  )),
                             ],
                           )),
                     ),
@@ -421,6 +526,156 @@ class _KitchenPageState extends State<KitchenPage> {
             style: _textStyle,
             textAlign: TextAlign.center,
           )
+        ],
+      ),
+    );
+  }
+
+  Container _showTotalAmount() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+              top: BorderSide(
+                  color: const Color(0xff3c486b).withOpacity(.3), width: 2))),
+      width: MediaQuery.sizeOf(context).width,
+      height: 180,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          double.parse(widget.afterFree.replaceAll(' ', '')) -
+                      calculateTotalPrice() <=
+                  0
+              ? Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Image.asset('assets/img/check.png', width: 22),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'Sizga bepul yetkazib beriladi',
+                    style: TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xff35a952),
+                      fontSize: 15,
+                    ),
+                  )
+                ])
+              : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Image.asset('assets/img/discount.png', width: 22),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${formatNumber(double.parse(widget.afterFree.replaceAll(' ', '')) - calculateTotalPrice())} So\'mdan keyin bepul yetkazib beriladi',
+                    style: const TextStyle(
+                      fontFamily: 'Josefin Sans',
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xff3c486b),
+                      fontSize: 15,
+                    ),
+                  )
+                ]),
+          const SizedBox(height: 16),
+          LinearProgressIndicator(
+            borderRadius: BorderRadius.circular(10),
+            value: double.parse(widget.afterFree.replaceAll(' ', '')) == 0
+                ? 1
+                : calculateTotalPrice() *
+                    100 /
+                    double.parse(widget.afterFree.replaceAll(' ', '')) /
+                    100,
+            color: double.parse(widget.afterFree.replaceAll(' ', '')) -
+                        calculateTotalPrice() <=
+                    0
+                ? const Color(0xff35a952)
+                : const Color(0xffff9556),
+          ),
+          const SizedBox(height: 24),
+          GestureDetector(
+            // onTap: () async {
+            //   final updatedBasket = await Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => Basket(
+            //           basketData: basketItems,
+            //           deliveryPrice: totalPrice >=
+            //                   double.parse(widget.afterFree.replaceAll(' ', ''))
+            //               ? 0
+            //               : double.parse(widget.afterFree.replaceAll(' ', ''))),
+            //     ),
+            //   );
+
+            //   // Check if updatedBasket is not null and update the state
+            //   if (updatedBasket != null) {
+            //     setState(() {
+            //       basketItems =
+            //           updatedBasket; // Update basketItems with the returned data
+            //     });
+            //     updateProductCounts();
+            //   }
+            // },
+            child: Container(
+              width: MediaQuery.sizeOf(context).width,
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xffff9556),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: Colors.white),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${basket.length}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xffffffff),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Josefin Sans',
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Positioned(
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Text(
+                        'Savatingizni ko\'ring',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Josefin Sans',
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: Text(
+                        '$basketTotalPrice So\'m',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Josefin Sans',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

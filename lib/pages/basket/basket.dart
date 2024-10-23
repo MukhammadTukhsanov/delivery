@@ -4,17 +4,17 @@ import 'package:yolda/pages/basket/basket_item.dart';
 import 'package:yolda/pages/order/index.dart';
 
 class Basket extends StatefulWidget {
-  final List<dynamic> backetData;
+  final List<dynamic> basketData;
   final deliveryPrice;
   const Basket(
-      {super.key, required this.backetData, required this.deliveryPrice});
+      {super.key, required this.basketData, required this.deliveryPrice});
 
   @override
   State<Basket> createState() => _BasketState();
 }
 
 class _BasketState extends State<Basket> {
-  String _sumOfBacket = '';
+  String _sumOfbasket = '';
 
   @override
   void initState() {
@@ -26,16 +26,16 @@ class _BasketState extends State<Basket> {
   void _changeItemCount(int index, bool increment) {
     setState(() {
       if (increment) {
-        widget.backetData[index]['count']++;
-      } else if (widget.backetData[index]['count'] > 1) {
-        widget.backetData[index]['count']--;
+        widget.basketData[index]['count']++;
+      } else if (widget.basketData[index]['count'] > 1) {
+        widget.basketData[index]['count']--;
       }
     });
     _sum();
   }
 
   void _sum() {
-    double totalSum = widget.backetData.fold(0, (sum, e) {
+    double totalSum = widget.basketData.fold(0, (sum, e) {
       String priceString = e["item"]["price"].toString().replaceAll(" ", '');
       double price = double.tryParse(priceString) ?? 0;
       double priceToCount = price * e["count"];
@@ -43,21 +43,21 @@ class _BasketState extends State<Basket> {
     });
 
     setState(() {
-      _sumOfBacket = formatNumber(totalSum);
+      _sumOfbasket = formatNumber(totalSum);
     });
   }
 
   void _removeItemFromBasket(index) {
     setState(() {
-      widget.backetData[index]['count'] = 0;
+      widget.basketData[index]['count'] = 0;
     });
     _sum();
   }
 
-  void emptyBacket() {
+  void emptybasket() {
     print("empty");
     setState(() {
-      widget.backetData.forEach((e) {
+      widget.basketData.forEach((e) {
         e['count'] = 0;
       });
     });
@@ -78,12 +78,12 @@ class _BasketState extends State<Basket> {
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(
-                  context, widget.backetData); // Return updated backetData
+                  context, widget.basketData); // Return updated basketData
             },
           ),
           actions: [
             GestureDetector(
-              onTap: () => emptyBacket(),
+              onTap: () => emptybasket(),
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Icon(Icons.delete_outlined),
@@ -91,7 +91,7 @@ class _BasketState extends State<Basket> {
             )
           ],
         ),
-        body: _sumOfBacket == "0"
+        body: _sumOfbasket == "0"
             ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -118,11 +118,11 @@ class _BasketState extends State<Basket> {
                       child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: ListView.builder(
-                      itemCount: widget.backetData.length,
+                      itemCount: widget.basketData.length,
                       itemBuilder: (context, index) {
-                        var item = widget.backetData[index];
+                        var item = widget.basketData[index];
                         return item['count'] > 0
-                            ? BacketItem(
+                            ? basketItem(
                                 count: item["count"],
                                 buildCount: _buildCountButton(
                                     icon: Icons.add,
@@ -146,7 +146,7 @@ class _BasketState extends State<Basket> {
                   AnimatedContainer(
                       duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
-                      height: _sumOfBacket == '0' ? 0 : 180,
+                      height: _sumOfbasket == '0' ? 0 : 180,
                       child: SingleChildScrollView(
                         child: Container(
                             padding: const EdgeInsets.all(16),
@@ -176,7 +176,7 @@ class _BasketState extends State<Basket> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      _sumOfBacket,
+                                      _sumOfbasket,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontFamily: "Josefin Sans",
@@ -204,8 +204,8 @@ class _BasketState extends State<Basket> {
                                     MaterialPageRoute(
                                       builder: (context) => Order(
                                           deliveryPrice: widget.deliveryPrice,
-                                          backetData: widget.backetData,
-                                          basketItemsPrice: _sumOfBacket),
+                                          basketData: widget.basketData,
+                                          basketItemsPrice: _sumOfbasket),
                                     ),
                                   ),
                                   child: Container(

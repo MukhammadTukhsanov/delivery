@@ -32,7 +32,7 @@ class _MarketProductsState extends State<MarketProducts> {
   String _selectedChip = '';
   final ScrollController _scrollController = ScrollController();
   final List<GlobalKey> _chipKeys = [];
-  List backetItems = [];
+  List basketItems = [];
 
   @override
   void initState() {
@@ -103,14 +103,14 @@ class _MarketProductsState extends State<MarketProducts> {
     // Create a list to store items that need to be removed
     List<dynamic> itemsToRemove = [];
 
-    for (var backetItem in backetItems) {
+    for (var basketItem in basketItems) {
       // Check if the count is zero
-      if (backetItem["count"] == 0) {
-        itemsToRemove.add(backetItem);
+      if (basketItem["count"] == 0) {
+        itemsToRemove.add(basketItem);
       } else {
         // Update the productCounts for items with non-zero counts
         setState(() {
-          productCounts[backetItem["item"]["index"]] = backetItem["count"];
+          productCounts[basketItem["item"]["index"]] = basketItem["count"];
         });
       }
     }
@@ -118,7 +118,7 @@ class _MarketProductsState extends State<MarketProducts> {
     // Remove the items with zero counts after the loop
     setState(() {
       for (var item in itemsToRemove) {
-        backetItems.remove(item);
+        basketItems.remove(item);
         productCounts.remove(item["item"]["index"]);
       }
     });
@@ -138,23 +138,22 @@ class _MarketProductsState extends State<MarketProducts> {
   }
 
   void updateProductCount(int index, int count, double price, item) {
-    var searchItem = backetItems.indexWhere((element) {
+    var searchItem = basketItems.indexWhere((element) {
       return element['item'] == item;
     });
 
     setState(() {
       if (searchItem != -1) {
         // Update the count of the existing item
-        backetItems[searchItem]["count"] = count;
+        basketItems[searchItem]["count"] = count;
       } else {
         // Add new item to the basket
-        backetItems.add({"count": count, "item": item});
+        basketItems.add({"count": count, "item": item});
       }
     });
 
-    // Update the product counts after updating backetItems
+    // Update the product counts after updating basketItems
     updateProductCounts();
-    print("backetItems: $backetItems");
   }
 
   var meniItems = [
@@ -320,10 +319,12 @@ class _MarketProductsState extends State<MarketProducts> {
           const SizedBox(height: 16),
           LinearProgressIndicator(
             borderRadius: BorderRadius.circular(10),
-            value: (totalPrice *
-                    100 /
-                    double.parse(widget.afterFree.replaceAll(' ', ''))) /
-                100,
+            value: double.parse(widget.afterFree.replaceAll(' ', '')) == 0
+                ? 1
+                : (totalPrice *
+                        100 /
+                        double.parse(widget.afterFree.replaceAll(' ', ''))) /
+                    100,
             color: double.parse(widget.afterFree.replaceAll(' ', '')) -
                         totalPrice <=
                     0
@@ -337,7 +338,7 @@ class _MarketProductsState extends State<MarketProducts> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => Basket(
-                      backetData: backetItems,
+                      basketData: basketItems,
                       deliveryPrice: totalPrice >=
                               double.parse(widget.afterFree.replaceAll(' ', ''))
                           ? 0
@@ -348,7 +349,7 @@ class _MarketProductsState extends State<MarketProducts> {
               // Check if updatedBasket is not null and update the state
               if (updatedBasket != null) {
                 setState(() {
-                  backetItems =
+                  basketItems =
                       updatedBasket; // Update basketItems with the returned data
                 });
                 updateProductCounts();

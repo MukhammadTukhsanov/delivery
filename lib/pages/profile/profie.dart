@@ -22,12 +22,12 @@ class _ProfilePageState extends State<ProfilePage> {
           //   icon: const Icon(Icons.arrow_back),
           //   onPressed: () {
           //     Navigator.pop(
-          //         context, widget.backetData); // Return updated backetData
+          //         context, widget.basketData); // Return updated basketData
           //   },
           // ),
           // actions: [
           //   GestureDetector(
-          //     onTap: () => emptyBacket(),
+          //     onTap: () => emptybasket(),
           //     child: const Padding(
           //       padding: EdgeInsets.symmetric(horizontal: 16),
           //       child: Icon(Icons.delete_outlined),
