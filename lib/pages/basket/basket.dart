@@ -128,9 +128,11 @@ class _BasketState extends State<Basket> {
                                     icon: Icons.add,
                                     onTap: () => _changeItemCount(index, true)),
                                 price: item['item']['price'],
-                                unitOfMeasure: item['item']['unit-of-measure'],
-                                measurementValue: item['item']
-                                    ['measurement-value'],
+                                unitOfMeasure: item['item']
+                                        ['unit-of-measure'] ??
+                                    "portsiya",
+                                measurementValue:
+                                    item['item']['measurement-value'] ?? "1",
                                 name: item['item']['name'],
                                 photo: item['item']['photo'],
                                 removeItem: () => _removeItemFromBasket(index),
