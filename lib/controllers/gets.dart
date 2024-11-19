@@ -126,7 +126,7 @@ class Gets {
         if (imagePath.isNotEmpty) {
           String imageURL =
               await _firebaseStorage.ref(imagePath).getDownloadURL();
-          data['imageUrl'] = imageURL;
+          data['photo'] = imageURL;
         }
         final ingredients =
             menuCollection.doc(doc.id).collection('ingredients');

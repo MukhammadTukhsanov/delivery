@@ -4,7 +4,7 @@ class KitchenMenuItems extends StatefulWidget {
   String foodName;
   String foodPrice;
   Map<String, dynamic> ingredients;
-  String imageURL;
+  String photo;
   int productCount;
   int index;
   Function(int) onCountChanged;
@@ -13,7 +13,7 @@ class KitchenMenuItems extends StatefulWidget {
       required this.foodName,
       required this.foodPrice,
       required this.ingredients,
-      required this.imageURL,
+      required this.photo,
       required this.productCount,
       required this.onCountChanged,
       required this.index});
@@ -29,25 +29,11 @@ class _KitchenMenuItemsState extends State<KitchenMenuItems> {
     setState(() {
       ingredientsText = '${widget.ingredients.values.join(', ')}, ';
     });
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // return Padding kitchenMenuItems(
-    //   {required int key,
-    //   required String foodName,
-    //   required String foodPrice,
-    //   required String imageURL,
-    //   required int index,
-    //   required Map<String, dynamic> ingredients,
-    //   required int productId}) {
-    // setState(() {
-    //   ingredientsText = '${ingredients.values.join(', ')}, ';
-    // });
-
-    // int productCount = productCountMap[productId] ?? 0;
     return Padding(
       key: ValueKey(widget.index),
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -102,13 +88,16 @@ class _KitchenMenuItemsState extends State<KitchenMenuItems> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(widget.imageURL),
+                      child: Image.network(widget.photo),
                     ),
                     Positioned(
+                      bottom: 10,
+                      right: 10,
                       child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(6),
+                        height: 30,
+                        decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xff3c486b).withOpacity(.4),
@@ -117,95 +106,50 @@ class _KitchenMenuItemsState extends State<KitchenMenuItems> {
                                 blurStyle: BlurStyle.outer,
                               ),
                             ],
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          height: 30,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 00),
-                                transitionBuilder: (Widget child,
-                                    Animation<double> animation) {
-                                  final inAnimation = Tween<Offset>(
-                                    begin: const Offset(
-                                        1.0, 0.0), // Starts from the right
-                                    end: Offset.zero,
-                                  ).animate(animation);
-
-                                  final outAnimation = Tween<Offset>(
-                                    begin: Offset.zero,
-                                    end: const Offset(
-                                        -1.0, 0.0), // Exits to the left
-                                  ).animate(animation);
-
-                                  return child.key == const ValueKey<int>(1)
-                                      ? SlideTransition(
-                                          position: inAnimation, child: child)
-                                      : SlideTransition(
-                                          position: outAnimation, child: child);
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    widget.productCount != 0
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              if (widget.productCount > 0) {
-                                                widget.onCountChanged(
-                                                    widget.productCount - 1);
-                                              }
-                                            },
-                                            child: SizedBox(
-                                              width: 18,
-                                              height: 18,
-                                              child: Image.asset(
-                                                  'assets/img/trash.png',
-                                                  width: 18,
-                                                  height: 18,
-                                                  scale: 1),
-                                            ))
-                                        : const SizedBox(),
-                                    widget.productCount != 0
-                                        ? SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: Center(
-                                              child: Text(
-                                                textAlign: TextAlign.center,
-                                                '${widget.productCount}',
-                                                overflow: TextOverflow.visible,
-                                                style: const TextStyle(
-                                                    color: Color(0xff3c486b),
-                                                    fontFamily: 'Josefin Sans',
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                          )
-                                        : const SizedBox(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        widget.onCountChanged(
-                                            widget.productCount + 1);
-                                        print("plus");
-                                      },
-                                      child: SizedBox(
-                                        child: Image.asset(
-                                          'assets/img/plus.png',
-                                          scale: 1,
-                                        ),
-                                      ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Row(
+                          children: [
+                            widget.productCount > 0
+                                ? GestureDetector(
+                                    onTap: () {
+                                      widget.onCountChanged(
+                                          widget.productCount - 1);
+                                    },
+                                    child: Image.asset(
+                                      'assets/img/trash.png',
+                                      scale: 1,
+                                      width: 18,
+                                      height: 18,
+                                    ))
+                                : const SizedBox(),
+                            widget.productCount > 0
+                                ? SizedBox(
+                                    width: 24,
+                                    child: Text(
+                                      textAlign: TextAlign.center,
+                                      '${widget.productCount}',
+                                      overflow: TextOverflow.visible,
+                                      style: const TextStyle(
+                                          color: Color(0xff3c486b),
+                                          fontFamily: 'Josefin Sans',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
                                     ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          )),
-                    ),
+                                  )
+                                : const SizedBox(),
+                            GestureDetector(
+                              onTap: () {
+                                print("plus");
+                                widget.onCountChanged(widget.productCount + 1);
+                              },
+                              child: Image.asset('assets/img/plus.png',
+                                  scale: 1, width: 18, height: 18),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ))
           ],

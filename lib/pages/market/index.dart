@@ -256,7 +256,7 @@ class _KitchenPageState extends State<KitchenPage> {
                       index: item['index'],
                       foodName: item['name'],
                       foodPrice: item['price'],
-                      imageURL: item['imageUrl'],
+                      photo: item['photo'],
                       ingredients: item['ingredients'] ?? {},
                       productCount: productCounts[item['index']] ?? 0,
                       onCountChanged: (newCount) {
@@ -328,7 +328,7 @@ class _KitchenPageState extends State<KitchenPage> {
     var searchItem = basketItems.indexWhere((element) {
       return element['item'] == item;
     });
-
+    print(item);
     setState(() {
       if (searchItem != -1) {
         // Update the count of the existing item
