@@ -58,7 +58,13 @@ class _KitchenMenuItemsState extends State<KitchenMenuItems> {
                           fontSize: 22,
                           fontWeight: FontWeight.w600,
                           color: Color(0xff3c486b))),
-                  Text(widget.foodPrice,
+                  Text("1 porstsiya",
+                      style: TextStyle(
+                          fontFamily: 'Josefin Sans',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xff3c486b).withOpacity(.8))),
+                  Text("${widget.foodPrice} so'm",
                       style: TextStyle(
                           fontFamily: 'Josefin Sans',
                           fontSize: 20,

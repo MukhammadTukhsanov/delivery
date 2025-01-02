@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:yolda/controllers/gets.dart';
 import 'package:yolda/controllers/user_location.dart';
+import 'package:yolda/pages/home/item_card.dart';
 import 'package:yolda/pages/home/list_title.dart';
 
 class Category extends StatefulWidget {
@@ -10,6 +12,12 @@ class Category extends StatefulWidget {
 }
 
 class _CategoryState extends State<Category> {
+  @override
+  void initState() {
+    super.initState();
+    // Gets.mixedAllStores();
+  }
+
   List headerMenu = [
     {'text': 'Savdo', 'img': 'assets/img/markets.png'},
     {'text': 'Suv', 'img': 'assets/img/water.png'},
@@ -42,6 +50,7 @@ class _CategoryState extends State<Category> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
           bottom: PreferredSize(
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
@@ -97,10 +106,14 @@ class _CategoryState extends State<Category> {
                 ],
               ),
             ),
-            Divider(),
+            const Divider(),
             ListTitle(
               text: 'Mashxur do`konlar',
-            )
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+              child: ItemCard(orders: 'mixStores', scrollDirection: 'vertical'),
+            ))
           ],
         ));
   }

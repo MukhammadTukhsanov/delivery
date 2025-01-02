@@ -41,7 +41,9 @@ class _ItemCardState extends State<ItemCard> {
           ? Gets.getLastOrders()
           : widget.orders == 'markets'
               ? await Gets.getMarkets()
-              : await Gets.kitchens();
+              : widget.orders == 'mixStores'
+                  ? await Gets.mixedAllStores()
+                  : await Gets.kitchens();
     } catch (e) {
       print('Error fetching kitchens: $e');
       return [];
@@ -49,7 +51,6 @@ class _ItemCardState extends State<ItemCard> {
   }
 
   void _navigateToMarketPage(BuildContext context, Map<String, dynamic> data) {
-    print('data: $data');
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -145,7 +146,9 @@ class _ItemCardState extends State<ItemCard> {
                     topRight: Radius.circular(8),
                   ),
                   child: Image.network(
-                    data['imageUrl'],
+                    data['imageUrl'] == null // Use null instead of Null
+                        ? "https://firebasestorage.googleapis.com/v0/b/yo-lda-a732c.appspot.com/o/qassob.png?alt=media&token=1a123d6f-0af6-476b-8ab2-eac16c5f77ad"
+                        : data["imageUrl"],
                     width: double.infinity,
                     height: 160,
                     fit: BoxFit.cover,
@@ -173,7 +176,7 @@ class _ItemCardState extends State<ItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data['name'],
+                    data['name'] == null ? "Name" : data['name'],
                     style: const TextStyle(
                       fontFamily: 'Josefin Sans',
                       fontSize: 18,

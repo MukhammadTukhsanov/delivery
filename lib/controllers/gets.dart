@@ -9,17 +9,20 @@ class Gets {
 
   static Future<List<Map<String, dynamic>>> getLastOrders() async {
     const defaultImageUrl =
-        'default_image_url'; // Consider moving to config or environment variables
+        'https://firebasestorage.googleapis.com/v0/b/yo-lda-a732c.appspot.com/o/qassob.png?alt=media&token=1a123d6f-0af6-476b-8ab2-eac16c5f77ad'; // Consider moving to config or environment variables
     try {
       final prefs = await SharedPreferences.getInstance();
       List<String> orders = prefs.getStringList('orders') ?? [];
       List<Map<String, dynamic>> lastKitchensData = [];
+      print("orders: ${orders}");
 
       final lastOrdersCollection =
           FirebaseFirestore.instance.collection('kitchens');
 
       // Ensure _firebaseStorage is properly initialized
       // final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+
+      // print("storage: $_firebaseStorage");
 
       for (String orderId in orders) {
         final docSnapshot = await lastOrdersCollection.doc(orderId).get();
@@ -39,7 +42,6 @@ class Gets {
           }
         }
         data['kitchenName'] = docSnapshot.id;
-        print("data: $data");
         lastKitchensData.add(data);
       }
       return lastKitchensData;
@@ -51,7 +53,7 @@ class Gets {
 
   static Future<List<Map<String, dynamic>>> kitchens() async {
     const defaultImageUrl =
-        'default_image_url'; // Move to config or env variable
+        'https://firebasestorage.googleapis.com/v0/b/yo-lda-a732c.appspot.com/o/qassob.png?alt=media&token=1a123d6f-0af6-476b-8ab2-eac16c5f77ad'; // Move to config or env variable
 
     try {
       QuerySnapshot querySnapshot =
@@ -122,6 +124,7 @@ class Gets {
       final querySnapshot = await menuCollection.get();
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data();
+        print("menu: ${data}");
         String imagePath = data["photo"];
         if (imagePath.isNotEmpty) {
           String imageURL =
@@ -142,7 +145,7 @@ class Gets {
 
         menuData.add(data);
       }
-      // print(menuData);
+      print(menuData);
       return menuData;
     } catch (e) {
       print("Error fetching orders: $e");
@@ -152,7 +155,7 @@ class Gets {
 
   static Future<List<Map<String, dynamic>>> getMarkets() async {
     const defaultImageUrl =
-        'default_image_url'; // Move to config or env variable
+        'https://firebasestorage.googleapis.com/v0/b/yo-lda-a732c.appspot.com/o/qassob.png?alt=media&token=1a123d6f-0af6-476b-8ab2-eac16c5f77ad'; // Move to config or env variable
 
     try {
       QuerySnapshot querySnapshot =
@@ -211,5 +214,27 @@ class Gets {
       print('Error fetching market products: $e');
       return [];
     }
+  }
+
+  static Future<List<Map<String, dynamic>>> mixedAllStores() async {
+    Set<Map<String, dynamic>> seen = {};
+    List<Map<String, dynamic>> mixedArray = [];
+    var kitchensData = await kitchens();
+    var marketsData = await getMarkets();
+
+    int maxLength = kitchensData.length > marketsData.length
+        ? kitchensData.length
+        : marketsData.length;
+
+    for (int i = 0; i < maxLength; i++) {
+      if (i < kitchensData.length && seen.add(kitchensData[i])) {
+        mixedArray.add(kitchensData[i]);
+      }
+      if (i < marketsData.length && seen.add(marketsData[i])) {
+        mixedArray.add(marketsData[i]);
+      }
+    }
+    print('mixedArray: $mixedArray');
+    return mixedArray;
   }
 }

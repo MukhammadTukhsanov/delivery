@@ -46,6 +46,7 @@ class _KitchenPageState extends State<KitchenPage> {
   }
 
   Future<void> _fetchMenuData() async {
+    print("fetch menu");
     try {
       List<Map<String, dynamic>> fetchedData = await Gets.getMenu(
           kitchen: widget.kitchenName, filter: widget.filter);
@@ -222,54 +223,54 @@ class _KitchenPageState extends State<KitchenPage> {
                 ),
               ),
               const Divider(),
-              if (widget.filter == 'markets')
-                Expanded(
-                  child: GridView.count(
-                    addAutomaticKeepAlives: true,
-                    addRepaintBoundaries: true,
-                    addSemanticIndexes: true,
-                    childAspectRatio: 3 / 3.3,
-                    shrinkWrap: true,
-                    crossAxisSpacing: 2,
-                    mainAxisSpacing: 4,
-                    crossAxisCount: 4,
-                    children: [
-                      ...meniItems.asMap().entries.map((e) {
-                        var item = e.value;
-                        int index = e.key;
-                        return marketMenuItems(
-                            photo: item['photo']!,
-                            text: item['text']!,
-                            key: index);
-                      })
-                    ],
-                  ),
-                )
-              else
-                Expanded(
-                    child: ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    var item = data[
-                        index]; // Accessing the item directly with the index
-                    return KitchenMenuItems(
-                      index: item['index'],
-                      foodName: item['name'],
-                      foodPrice: item['price'],
-                      photo: item['photo'],
-                      ingredients: item['ingredients'] ?? {},
-                      productCount: productCounts[item['index']] ?? 0,
-                      onCountChanged: (newCount) {
-                        updateProductCount(
-                          item['index'],
-                          newCount,
-                          double.parse('${item['price']}'.replaceAll(' ', '')),
-                          item,
-                        );
-                      },
-                    );
-                  },
-                ))
+              // if (widget.filter == 'markets') {
+              //   return Expanded(
+              //     child: GridView.count(
+              //       addAutomaticKeepAlives: true,
+              //       addRepaintBoundaries: true,
+              //       addSemanticIndexes: true,
+              //       childAspectRatio: 3 / 3.3,
+              //       shrinkWrap: true,
+              //       crossAxisSpacing: 2,
+              //       mainAxisSpacing: 4,
+              //       crossAxisCount: 4,
+              //       children: [
+              //         ...meniItems.asMap().entries.map((e) {
+              //           var item = e.value;
+              //           int index = e.key;
+              //           return marketMenuItems(
+              //               photo: item['photo']!,
+              //               text: item['text']!,
+              //               key: index);
+              //         })
+              //       ],
+              //     ),
+              //   )
+              // }else
+              Expanded(
+                  child: ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  var item =
+                      data[index]; // Accessing the item directly with the index
+                  return KitchenMenuItems(
+                    index: item['index'],
+                    foodName: item['name'],
+                    foodPrice: item['price'],
+                    photo: item['photo'],
+                    ingredients: item['ingredients'] ?? {},
+                    productCount: productCounts[item['index']] ?? 0,
+                    onCountChanged: (newCount) {
+                      updateProductCount(
+                        item['index'],
+                        newCount,
+                        double.parse('${item['price']}'.replaceAll(' ', '')),
+                        item,
+                      );
+                    },
+                  );
+                },
+              ))
 
               // menuItems()
             ],
